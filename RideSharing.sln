@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideSharing.Web", "RideSharing.Web\RideSharing.Web.csproj", "{89DA2674-6D6B-4882-BCB3-5A5D6B5078ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideSharing.DAL", "RideSharing.DAL\RideSharing.DAL.csproj", "{97EB9519-1DA7-4AB0-BD7D-249083AB0AC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideSharing.BL", "RideSharing.BL\RideSharing.BL.csproj", "{AAD3EAE8-D634-4A85-8DF1-8D5437EF4A6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideSharing.Models", "RideSharing.Models\RideSharing.Models.csproj", "{BCE59960-3017-4E91-8092-69D24B9CBBC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideSharing.Contract", "RideSharing.Contract\RideSharing.Contract.csproj", "{78ED03E5-16AD-4C06-AFB7-0D4D1DF4F3A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideSharing.Tests", "RideSharing.Tests\RideSharing.Tests.csproj", "{C6C5E172-CC19-44E7-97B4-F6CEF4F87BD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideSharing.API", "RideSharing.API\RideSharing.API.csproj", "{DEDEEED3-4AFF-4877-BEF7-F92A9D09D905}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89DA2674-6D6B-4882-BCB3-5A5D6B5078ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89DA2674-6D6B-4882-BCB3-5A5D6B5078ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89DA2674-6D6B-4882-BCB3-5A5D6B5078ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89DA2674-6D6B-4882-BCB3-5A5D6B5078ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97EB9519-1DA7-4AB0-BD7D-249083AB0AC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97EB9519-1DA7-4AB0-BD7D-249083AB0AC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97EB9519-1DA7-4AB0-BD7D-249083AB0AC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97EB9519-1DA7-4AB0-BD7D-249083AB0AC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAD3EAE8-D634-4A85-8DF1-8D5437EF4A6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAD3EAE8-D634-4A85-8DF1-8D5437EF4A6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAD3EAE8-D634-4A85-8DF1-8D5437EF4A6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAD3EAE8-D634-4A85-8DF1-8D5437EF4A6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE59960-3017-4E91-8092-69D24B9CBBC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE59960-3017-4E91-8092-69D24B9CBBC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE59960-3017-4E91-8092-69D24B9CBBC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE59960-3017-4E91-8092-69D24B9CBBC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78ED03E5-16AD-4C06-AFB7-0D4D1DF4F3A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78ED03E5-16AD-4C06-AFB7-0D4D1DF4F3A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78ED03E5-16AD-4C06-AFB7-0D4D1DF4F3A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78ED03E5-16AD-4C06-AFB7-0D4D1DF4F3A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6C5E172-CC19-44E7-97B4-F6CEF4F87BD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6C5E172-CC19-44E7-97B4-F6CEF4F87BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6C5E172-CC19-44E7-97B4-F6CEF4F87BD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6C5E172-CC19-44E7-97B4-F6CEF4F87BD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEDEEED3-4AFF-4877-BEF7-F92A9D09D905}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEDEEED3-4AFF-4877-BEF7-F92A9D09D905}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEDEEED3-4AFF-4877-BEF7-F92A9D09D905}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEDEEED3-4AFF-4877-BEF7-F92A9D09D905}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
