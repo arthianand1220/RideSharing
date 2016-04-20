@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "Process";
+}
+
+
+
+<div id="map"></div>
+@section Scripts
+{
+    <script>
+        var map;
+        var data = {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-73.7781, 40.7128]
+            },
+            "properties": {
+                "name": "Dinagat Islands"
+            }
+        };
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 40.7128, lng: -74.0059 },
+                zoom: 10
+            });
+            map.data.addGeoJson(data);
+        }
+
+
+    </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSrpFk7yBB3mRaV9ocBmdTYcZivBB1FnQ&callback=initMap"
+            type="text/javascript"></script>
+}
+

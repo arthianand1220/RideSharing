@@ -7,6 +7,7 @@
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
+    padding-top: 50px;
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
@@ -16,3 +17,6 @@ textarea {
     max-width: 280px;
 }
 
+#map { 
+    height: 480px;
+}
