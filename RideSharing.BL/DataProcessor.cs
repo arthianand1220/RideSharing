@@ -32,13 +32,15 @@ namespace RideSharing.BL
                 {
                     RideDetails dm = new RideDetails();
                     dm.Id = Convert.ToInt64(lineNumber);
-                    var Latitude = Convert.ToDouble(tempLines[11]);
-                    var Longitude = Convert.ToDouble(tempLines[10]);
+                    var sourceLat = Convert.ToDouble(tempLines[11]);
+                    var sourceLong = Convert.ToDouble(tempLines[10]);
+                    var destLat = Convert.ToDouble(tempLines[13]);
+                    var destLong = Convert.ToDouble(tempLines[12]);
 
-                    if ((Longitude >= -73.825722 && Latitude >= 40.642354) &&
-                                        (Longitude <= -73.752251 && Latitude <= 40.67491))
+                    if ((sourceLong >= -73.825722 && sourceLat >= 40.642354) &&
+                        (sourceLong <= -73.752251 && sourceLat <= 40.67491))
                     {
-                        dm.Destination = SqlGeography.Point(Convert.ToDouble(tempLines[13]), Convert.ToDouble(tempLines[12]), 4326);
+                        dm.Destination = SqlGeography.Point(destLat, destLong, 4326);
                         dm.PickupDateTime = DateTime.ParseExact(tempLines[5], "yyyy-MM-dd HH:mm:ss",
                                        System.Globalization.CultureInfo.InvariantCulture);
                         dm.DropoffDateTime = DateTime.ParseExact(tempLines[6], "yyyy-MM-dd HH:mm:ss",

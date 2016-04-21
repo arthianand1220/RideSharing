@@ -76,6 +76,9 @@
                  if (data.length > 0) {
                      var records = JSON.parse(data);
                      $("#rCount").html(records.features.length + " Records");
+                     map.data.forEach(function (feature) {
+                         map.data.remove(feature);
+                     });
                      map.data.addGeoJson(records);
                  }
                  else {
