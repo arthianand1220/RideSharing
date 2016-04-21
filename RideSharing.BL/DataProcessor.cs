@@ -16,7 +16,6 @@ namespace RideSharing.BL
 
         public DataProcessor(RideDetailsRepository RDRepo)
         {
-            SqlServerTypes.Utilities.LoadNativeAssemblies(AppDomain.CurrentDomain.BaseDirectory);
             rdRepo = RDRepo;
         }
 
@@ -24,7 +23,7 @@ namespace RideSharing.BL
         {
             ConcurrentBag<RideDetails> tempRideDetails = new ConcurrentBag<RideDetails>();
             Random random = new Random();
-            string TableName = Path.GetFileNameWithoutExtension(FilePath);
+            string TableName = "";
 
             Parallel.ForEach(File.ReadLines(FilePath), (line, _, lineNumber) =>
             {
@@ -33,17 +32,19 @@ namespace RideSharing.BL
                 {
                     RideDetails dm = new RideDetails();
                     dm.Id = Convert.ToInt64(lineNumber);
-                    var Latitude = Convert.ToDouble(tempLines[13]);
-                    var Longitude = Convert.ToDouble(tempLines[12]);
+                    var Latitude = Convert.ToDouble(tempLines[11]);
+                    var Longitude = Convert.ToDouble(tempLines[10]);
 
                     if ((Longitude >= -73.825722 && Latitude >= 40.642354) &&
                                         (Longitude <= -73.752251 && Latitude <= 40.67491))
                     {
-                        dm.Destination = SqlGeography.Point(Latitude, Longitude, 4326);
+                        dm.Destination = SqlGeography.Point(Convert.ToDouble(tempLines[13]), Convert.ToDouble(tempLines[12]), 4326);
                         dm.PickupDateTime = DateTime.ParseExact(tempLines[5], "yyyy-MM-dd HH:mm:ss",
                                        System.Globalization.CultureInfo.InvariantCulture);
                         dm.DropoffDateTime = DateTime.ParseExact(tempLines[6], "yyyy-MM-dd HH:mm:ss",
                                        System.Globalization.CultureInfo.InvariantCulture);
+                        if (String.IsNullOrEmpty(TableName))
+                            TableName = "RideDetails" + dm.PickupDateTime.Year + dm.PickupDateTime.Month.ToString("00");
                         dm.PassengerCount = Convert.ToInt32(tempLines[7]);
                         dm.Duration = Convert.ToDouble(tempLines[8]);
                         dm.Distance = Convert.ToDouble(tempLines[9]);

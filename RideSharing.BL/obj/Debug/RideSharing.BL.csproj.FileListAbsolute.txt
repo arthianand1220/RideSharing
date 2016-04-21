@@ -1,0 +1,16 @@
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\SqlServerTypes\x64\msvcr100.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\SqlServerTypes\x64\SqlServerSpatial110.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\SqlServerTypes\x86\msvcr100.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\SqlServerTypes\x86\SqlServerSpatial110.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\RideSharing.BL.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\RideSharing.BL.pdb
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\Microsoft.SqlServer.Types.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\RideSharing.Contract.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\RideSharing.DAL.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\RideSharing.Models.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\RideSharing.Contract.pdb
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\RideSharing.DAL.pdb
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\RideSharing.Models.pdb
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\obj\Debug\RideSharing.BL.csprojResolveAssemblyReference.cache
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\obj\Debug\RideSharing.BL.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\obj\Debug\RideSharing.BL.pdb

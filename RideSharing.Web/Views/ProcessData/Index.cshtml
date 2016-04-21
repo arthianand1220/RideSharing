@@ -3,33 +3,96 @@
 }
 
 
+<div class="container">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="well bs-component">
+                <div class="form-horizontal">
+                    <fieldset>
+                        <legend>Algorithm Input</legend>
+                        <div class="form-group">
+                            <label for="startRange" class="col-lg-4 control-label">Start DateTime: </label>
+                            <div class="col-md-8">
+                                <div class='input-group datetimepicker1'>
+                                    <input type='text' class="form-control" aria-describedby="basic-addon2" id="startRange" placeholder="Start DateTime" name="startDateTime" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar" id="basic-addon2"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="endRange" class="col-md-4 control-label">End DateTime: </label>
+                            <div class="col-md-8">
+                                <div class='input-group datetimepicker1'>
+                                    <input type='text' class="form-control" aria-describedby="basic-addon2" id="endRange" placeholder="End DateTime" name="endDateTime" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar" id="basic-addon2"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="recordCount" class="col-md-4 control-label">Records Selected: </label>
+                            <div class="col-md-8">
+                                <p id="recordCount" class="container">
+                                    <h4 id="rCount">0 Records</h4>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-11 col-lg-offset-1">
+                                <button type="reset" class="btn btn-default">Clear</button> &nbsp; &nbsp;
+                                <button class="btn btn-primary" onclick="getRecords();">Get Records</button> &nbsp; &nbsp;
+                                <button class="btn btn-primary">Run Algorithm</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div id="map"></div>
+        </div>
+    </div>
+</div>
 
-<div id="map"></div>
 @section Scripts
 {
+    <link href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css" rel="stylesheet">
     <script>
         var map;
-        var data = {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [-73.7781, 40.7128]
-            },
-            "properties": {
-                "name": "Dinagat Islands"
-            }
-        };
+
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 40.7128, lng: -74.0059 },
                 zoom: 10
             });
-            map.data.addGeoJson(data);
         }
 
-
+        function getRecords() {
+            $.post("/ProcessData/GetRecords", { startDateTime: $('#startRange').val(), endDateTime: $('#endRange').val() })
+             .done(function (data) {
+                 if (data.length > 0) {
+                     var records = JSON.parse(data);
+                     $("#rCount").html(records.features.length + " Records");
+                     map.data.addGeoJson(records);
+                 }
+                 else {
+                     $("#rCount").html("0 Records");
+                 }
+             });
+        }
     </script>
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+    <script src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('.datetimepicker1').datetimepicker();
+        });
+    </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDSrpFk7yBB3mRaV9ocBmdTYcZivBB1FnQ&callback=initMap"
             type="text/javascript"></script>
 }

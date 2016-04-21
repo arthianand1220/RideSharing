@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RideSharing.Models
 {
-    public class Position
+    public class RideSharingPosition
     {
         public Double Latitude { get; set; }
 

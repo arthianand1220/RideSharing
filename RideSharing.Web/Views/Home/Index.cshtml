@@ -11,32 +11,40 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="page-header">
-                <h1 id="forms">Input Data Options</h1>
+                <h3 id="forms">Input Data Options</h3>
+                <hr />
             </div>
         </div>
     </div>
-    <hr />
     <div class="row">
         <div class="col-lg-6 col-lg-offset-3">
+            @if (!String.IsNullOrEmpty(ViewBag.Message))
+            {
+                <div class="bs-component">
+                    <div class="alert alert-dismissible alert-success">
+                        Data imported and processed succesfully!
+                    </div>
+                </div>
+            }
             <div class="well bs-component">
-                <form class="form-horizontal">
+                <form class="form-horizontal" enctype="multipart/form-data" method="post" action="/Home/Index">
                     <fieldset>
                         <div class="form-group">
                             <label for="dataFile" class="col-lg-5 control-label">Data File (CSV):</label>
                             <div class="col-lg-7">
-                                <input type="file" class="form-control" id="dataFile" placeholder="Data File">
+                                <input type="file" class="form-control" id="dataFile" placeholder="Data File" name="file">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="maxWalkingTime" class="col-lg-5 control-label">Max Walking Time (Mins):</label>
                             <div class="col-lg-7">
-                                <input type="text" class="form-control" id="maxWalkingTime" placeholder="Max Walking Time (Mins)">
+                                <input type="text" class="form-control" id="maxWalkingTime" placeholder="Max Walking Time (Mins)" name="maxWalkingTime" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="maxWaitingTime" class="col-lg-5 control-label">Max Waiting Time (Mins):</label>
                             <div class="col-lg-7">
-                                <input type="text" class="form-control" id="maxWaitingTime" placeholder="Max Waiting Time (Mins)">
+                                <input type="text" class="form-control" id="maxWaitingTime" placeholder="Max Waiting Time (Mins)" name="maxWaitingTime" required>
                             </div>
                         </div>
                         <div class="form-group">

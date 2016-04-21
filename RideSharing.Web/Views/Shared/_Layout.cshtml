@@ -23,11 +23,11 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav pull-right">
-                    <li class="active">@Html.ActionLink("Home", "Index", "Home", new { area = "" })</li>
-                    <li>@Html.ActionLink("Process Data", "Index", "Home", new { area = "" })</li>
-                    <li>@Html.ActionLink("Visualizations", "Index", "Home", new { area = "" })</li>
-                    <li>@Html.ActionLink("API", "Index", "Home", new { area = "" })</li>
-                    <li>@Html.ActionLink("Team", "Index", "Home", new { area = "" })</li>
+                    <li class="@(Request.Url.AbsoluteUri.Contains("Home") ? "active" : "")"><a href="/Home">Home</a></li>
+                    <li class="@(Request.Url.AbsoluteUri.Contains("ProcessData") ? "active" : "")"><a href="/ProcessData">Process Data</a></li>
+                    <li class="@(Request.Url.AbsoluteUri.Contains("Visualizations") ? "active" : "")"><a href="/Visualizations">Visualizations</a></li>
+                    <li class="@(Request.Url.AbsoluteUri.Contains("API") ? "active" : "")"><a href="/API">API</a></li>
+                    <li class="@(Request.Url.AbsoluteUri.Contains("Team") ? "active" : "")"><a href="/Team">Team</a></li>
                 </ul>
             </div>
         </div>

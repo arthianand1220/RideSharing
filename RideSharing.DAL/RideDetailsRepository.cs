@@ -1,4 +1,5 @@
-﻿using RideSharing.Models;
+﻿using Microsoft.SqlServer.Types;
+using RideSharing.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -15,7 +16,7 @@ namespace RideSharing.DAL
             {
                 connection.Open();
                 SqlTransaction transaction = connection.BeginTransaction();
-                int returnValue = -1;
+                int returnValue = 0;
 
                 string createTable = " CREATE TABLE dbo." + TableName + "( " +
                                      " [Id][bigint] IDENTITY(1, 1) NOT NULL, " +
@@ -28,10 +29,12 @@ namespace RideSharing.DAL
                                      " [WaitTime] [int] NOT NULL, " +
                                      " [WalkTime] [int] NOT NULL " +
                                      " ) ON[PRIMARY] TEXTIMAGE_ON[PRIMARY]";
-                using (SqlCommand command = new SqlCommand(createTable, connection))
-                returnValue = command.ExecuteNonQuery();
+                using (SqlCommand command = new SqlCommand(createTable, connection, transaction))
+                {
+                    returnValue = command.ExecuteNonQuery();
+                }
 
-                if(returnValue > 0)
+                if (returnValue == -1)
                 {
                     using (var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction))
                     {
@@ -48,11 +51,37 @@ namespace RideSharing.DAL
                             connection.Close();
                         }
                     }
-                }              
+                }
 
                 transaction.Commit();
             }
             return processedRecords;
+        }
+
+        public List<RideSharingPosition> GetRecords(string StartDate, string EndDate, string TableName)
+        {
+            List<RideSharingPosition> rideDetails = new List<RideSharingPosition>();
+
+            using (var connection = new SqlConnection("Data Source=.;Initial Catalog=RideSharing;Integrated Security=True"))
+            {
+                connection.Open();
+
+                string getRecords = " SELECT Destination.Lat, Destination.Long FROM " + TableName +
+                                    " WHERE PickupDateTime >= '" + StartDate + "' " + 
+                                    " AND PickupDateTime <= '" + EndDate + "'";
+
+                SqlCommand command = new SqlCommand(getRecords, connection);
+                var returnValue = command.ExecuteReader();
+                while(returnValue.Read())
+                {
+                    RideSharingPosition position = new RideSharingPosition();
+                    position.Latitude = Convert.ToDouble(returnValue[0]);
+                    position.Longitude = Convert.ToDouble(returnValue[1]);
+                    rideDetails.Add(position);
+                }
+            }
+
+            return rideDetails;
         }
     }
 }
