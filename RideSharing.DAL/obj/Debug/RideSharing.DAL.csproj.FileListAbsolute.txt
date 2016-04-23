@@ -8,10 +8,10 @@ D:\Classes\Database Systems\RideSharing\RideSharing.DAL\bin\Debug\RideSharing.DA
 D:\Classes\Database Systems\RideSharing\RideSharing.DAL\bin\Debug\EntityFramework.dll
 D:\Classes\Database Systems\RideSharing\RideSharing.DAL\bin\Debug\EntityFramework.SqlServer.dll
 D:\Classes\Database Systems\RideSharing\RideSharing.DAL\bin\Debug\Microsoft.SqlServer.Types.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.DAL\bin\Debug\RideSharing.Models.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.DAL\bin\Debug\RideSharing.Models.pdb
 D:\Classes\Database Systems\RideSharing\RideSharing.DAL\bin\Debug\EntityFramework.xml
 D:\Classes\Database Systems\RideSharing\RideSharing.DAL\bin\Debug\EntityFramework.SqlServer.xml
 D:\Classes\Database Systems\RideSharing\RideSharing.DAL\obj\Debug\RideSharing.DAL.csprojResolveAssemblyReference.cache
 D:\Classes\Database Systems\RideSharing\RideSharing.DAL\obj\Debug\RideSharing.DAL.dll
 D:\Classes\Database Systems\RideSharing\RideSharing.DAL\obj\Debug\RideSharing.DAL.pdb
-D:\Classes\Database Systems\RideSharing\RideSharing.DAL\bin\Debug\RideSharing.Models.dll
-D:\Classes\Database Systems\RideSharing\RideSharing.DAL\bin\Debug\RideSharing.Models.pdb

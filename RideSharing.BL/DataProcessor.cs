@@ -21,7 +21,7 @@ namespace RideSharing.BL
 
         public long ProcessData(string FilePath, int MaxWaitingTime, int MaxWalkingTime)
         {
-            ConcurrentBag<RideDetails> tempRideDetails = new ConcurrentBag<RideDetails>();
+            ConcurrentBag<RideDetailsDBRecord> tempRideDetails = new ConcurrentBag<RideDetailsDBRecord>();
             Random random = new Random();
             string TableName = "";
 
@@ -30,7 +30,7 @@ namespace RideSharing.BL
                 var tempLines = line.Split(',');
                 try
                 {
-                    RideDetails dm = new RideDetails();
+                    RideDetailsDBRecord dm = new RideDetailsDBRecord();
                     dm.Id = Convert.ToInt64(lineNumber);
                     var sourceLat = Convert.ToDouble(tempLines[11]);
                     var sourceLong = Convert.ToDouble(tempLines[10]);
@@ -38,7 +38,9 @@ namespace RideSharing.BL
                     var destLong = Convert.ToDouble(tempLines[12]);
 
                     if ((sourceLong >= -73.825722 && sourceLat >= 40.642354) &&
-                        (sourceLong <= -73.752251 && sourceLat <= 40.67491))
+                        (sourceLong <= -73.752251 && sourceLat <= 40.67491) &&
+                        !((destLong >= -73.825722 && destLat >= 40.642354) &&
+                        (destLong <= -73.752251 && destLat <= 40.67491)))
                     {
                         dm.Destination = SqlGeography.Point(destLat, destLong, 4326);
                         dm.PickupDateTime = DateTime.ParseExact(tempLines[5], "yyyy-MM-dd HH:mm:ss",

@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IDataProcessor.cs" />
+    <Compile Include="IRideProcessor.cs" />
     <Compile Include="ITripProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

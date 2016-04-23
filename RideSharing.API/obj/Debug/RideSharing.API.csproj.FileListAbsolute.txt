@@ -23,6 +23,5 @@ D:\Classes\Database Systems\RideSharing\RideSharing.API\bin\Newtonsoft.Json.xml
 D:\Classes\Database Systems\RideSharing\RideSharing.API\bin\System.Net.Http.Formatting.xml
 D:\Classes\Database Systems\RideSharing\RideSharing.API\bin\System.Web.Http.xml
 D:\Classes\Database Systems\RideSharing\RideSharing.API\bin\System.Web.Http.WebHost.xml
-D:\Classes\Database Systems\RideSharing\RideSharing.API\obj\Debug\RideSharing.API.csprojResolveAssemblyReference.cache
 D:\Classes\Database Systems\RideSharing\RideSharing.API\obj\Debug\RideSharing.API.dll
 D:\Classes\Database Systems\RideSharing\RideSharing.API\obj\Debug\RideSharing.API.pdb

@@ -6,6 +6,5 @@ D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\RideSharing.
 D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\RideSharing.Tests.pdb
 D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\Microsoft.SqlServer.Types.dll
 D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
-D:\Classes\Database Systems\RideSharing\RideSharing.Tests\obj\Debug\RideSharing.Tests.csprojResolveAssemblyReference.cache
 D:\Classes\Database Systems\RideSharing\RideSharing.Tests\obj\Debug\RideSharing.Tests.dll
 D:\Classes\Database Systems\RideSharing\RideSharing.Tests\obj\Debug\RideSharing.Tests.pdb

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideSharing.Tests", "RideSh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideSharing.API", "RideSharing.API\RideSharing.API.csproj", "{DEDEEED3-4AFF-4877-BEF7-F92A9D09D905}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideSharing.Service", "RideSharing.Service\RideSharing.Service.csproj", "{A921E017-81D3-47B0-998A-A8F25CA566CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{DEDEEED3-4AFF-4877-BEF7-F92A9D09D905}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEDEEED3-4AFF-4877-BEF7-F92A9D09D905}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEDEEED3-4AFF-4877-BEF7-F92A9D09D905}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A921E017-81D3-47B0-998A-A8F25CA566CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A921E017-81D3-47B0-998A-A8F25CA566CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A921E017-81D3-47B0-998A-A8F25CA566CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A921E017-81D3-47B0-998A-A8F25CA566CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,23 +6,47 @@ using System.Text;
 using System.Threading.Tasks;
 using RideSharing.Models;
 using RideSharing.DAL;
+using System.Net.Http;
 
 namespace RideSharing.BL
 {
     public class TripProcessor : ITripProcessor
     {
-        private RideDetailsRepository rdRepo;
+        private List<RideDetails> rideDetails;
+        private Dictionary<long, float> rideDistanceMatrix;
+        private string APIUrl;
+        private RideDetailsRepository rideDetailsRepo;
+        private IRideProcessor rideProcessor;
 
-        public TripProcessor(RideDetailsRepository RDRepo)
+        public TripProcessor(RideDetailsRepository RideDetailsRepo, IRideProcessor RideProcessor, string APIURL)
         {
-            rdRepo = RDRepo;
+            rideDetailsRepo = RideDetailsRepo;
+            rideProcessor = RideProcessor;
+            APIUrl = APIURL;
+            rideDetails = new List<RideDetails>();
+            rideDistanceMatrix = new Dictionary<long, float>();
         }
 
-        public List<RideSharingPosition> GetRecordsWithinTimeFrame(string StartDate, string EndDate)
+        public List<TripDetails> GetTrips(long simulationId)
         {
-            var date = DateTime.Parse(StartDate);
-            string tableName = "RideDetails" + date.Year + date.Month.ToString("00");
-            return rdRepo.GetRecords(StartDate, EndDate, tableName);
+            throw new NotImplementedException();
+        }
+
+        public bool ProcessTrips(string startDate, string endDate)
+        {
+            rideDetails = rideProcessor.GetRides(startDate, endDate);
+
+            return false;
+        }
+
+        public bool RunSimulations(string startDate, string endDate, int numSimulations, int poolSize)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ConstructDistanceMatrixFromSource()
+        {
+            HttpClient httpClient = new HttpClient();
         }
     }
 }

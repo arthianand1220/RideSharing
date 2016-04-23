@@ -9,16 +9,16 @@ using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 
-namespace DataCleaner.Controllers
+namespace RideSharingWeb.Controllers
 {
     public class ProcessDataController : Controller
     {
-        private ITripProcessor tripProcessor;
+        private IRideProcessor tripProcessor;
 
         public ProcessDataController()
         {
             RideDetailsRepository rideDetailsRepo = new RideDetailsRepository();
-            tripProcessor = new TripProcessor(rideDetailsRepo);
+            tripProcessor = new RideProcessor(rideDetailsRepo);
         }
 
         public ActionResult Index()
@@ -31,7 +31,7 @@ namespace DataCleaner.Controllers
         {
             if (DateTime.Compare(DateTime.Parse(startDateTime), DateTime.Parse(endDateTime)) < 0)
             {
-                List<RideSharingPosition> tempData = tripProcessor.GetRecordsWithinTimeFrame(startDateTime, endDateTime);
+                List<RideSharingPosition> tempData = tripProcessor.GetRideLocations(startDateTime, endDateTime);
                 FeatureCollection returnData = new FeatureCollection();
                 foreach (var data in tempData)
                 {                    
