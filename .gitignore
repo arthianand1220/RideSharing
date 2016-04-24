@@ -48,5 +48,19 @@ Temporary Items
 *.csv
 
 # DLLs
-bin/
-obj/
+RideSharing.API/bin
+RideSharing.API/obj
+RideSharing.BL/bin
+RideSharing.BL/obj
+RideSharing.Contract/bin
+RideSharing.Contract/obj
+RideSharing.DAL/bin
+RideSharing.DAL/obj
+RideSharing.Models/bin
+RideSharing.Models/obj
+RideSharing.Service/bin
+RideSharing.Service/obj
+RideSharing.Tests/bin
+RideSharing.Tests/obj
+RideSharing.Web/bin
+RideSharing.Web/obj

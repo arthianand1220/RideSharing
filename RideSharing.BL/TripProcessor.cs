@@ -13,24 +13,6 @@ using Microsoft.SqlServer.Types;
 
 namespace RideSharing.BL
 {
-    public class DuplicateKeyComparer<TKey> :
-             IComparer<TKey> where TKey : IComparable
-    {
-        #region IComparer<TKey> Members
-
-        public int Compare(TKey x, TKey y)
-        {
-            int result = x.CompareTo(y);
-
-            if (result == 0)
-                return 1;   // Handle equality as beeing greater
-            else
-                return result;
-        }
-
-        #endregion
-    }
-
     public class TripProcessor : ITripProcessor
     {
         private List<RideDetails> rideDetails;
@@ -41,9 +23,12 @@ namespace RideSharing.BL
         private SortedDictionary<int, double> sourceMatrix;
         private List<TripDetails> tripDetails;
         private static int MAX_WALKING_RADIUS = 3;
-        private static int MAX_PASSENGER_COUNT = 6;
-        private static double AVG_SPEED_VEHICLE_PER_MINUTE = (60 / 60);
+        private static int MAX_PASSENGER_COUNT = 4;
+        private static double AVG_SPEED_VEHICLE = 45;
+        private static double AVG_SPEED_VEHICLE_PER_MINUTE = (AVG_SPEED_VEHICLE / 60);
         private static string SOURCE_POSITION = "-73.8056301,40.6599388;";
+        private static int MIN_PERCENTAGE = 80;
+        private static int MAX_PERCENTAGE = 60;
 
         public TripProcessor(RideDetailsRepository RideDetailsRepo, IRideProcessor RideProcessor, string APIURL)
         {
@@ -76,8 +61,10 @@ namespace RideSharing.BL
                     if (!ridesProcessed.Exists(r => r == ride.RideDetailsId) && CheckCompatibility(ride, StartDateTime, sourceMatrix[index], 0, true))
                     {
                         var dropoffTime = GetDropoffTime(StartDateTime, sourceMatrix[index]);
-                        SaveTrip(ride, cabId, SimulationId, StartDateTime, dropoffTime);
-                        CheckForWalkingCondition(ride, dropoffTime, cabId, SimulationId, StartDateTime);
+                        SaveTrip(ride, cabId, SimulationId, StartDateTime, dropoffTime, 1);
+                        CheckForWalkingCondition(ride, dropoffTime, cabId, SimulationId, StartDateTime, 1);
+                        CheckForCarSharingCondition(ride, dropoffTime, cabId, SimulationId, StartDateTime, 1);
+                        cabId++;
                     }
                 }
 
@@ -102,12 +89,12 @@ namespace RideSharing.BL
 
             if (!String.IsNullOrEmpty(coordinates))
             {
-                var dMatrix = GetDataFromServer<OSRMDistanceMatrix>(coordinates);
+                var dMatrix = GetDataFromServer<OSRMDistanceMatrix>(coordinates, "table");
 
                 int index = 0;
                 foreach (var elem in dMatrix.durations[0])
                 {
-                    sourceMatrix.Add(index++, elem);
+                    sourceMatrix.Add(index++, elem / 60);
                 }
 
                 index = 1;
@@ -116,7 +103,7 @@ namespace RideSharing.BL
                     int tempIndex = 0;
                     foreach (double dmat in dMatrix.durations[index++])
                     {
-                        elem.TimeMatrix.Add(tempIndex++, dmat);
+                        elem.TimeMatrix.Add(tempIndex++, dmat / 60);
                     }
                 }
                 return true;
@@ -137,23 +124,32 @@ namespace RideSharing.BL
             return coordinates.Substring(0, coordinates.Length - 1);
         }
 
-        private T GetDataFromServer<T>(string urlString)
+        private T GetDataFromServer<T>(string urlString, string method)
         {
             WebClient wc = new WebClient();
-            var data = wc.DownloadString(APIUrl + "table/v1/driving/" + SOURCE_POSITION + urlString);
+            string data = "";
+            if(method == "table")
+            {
+                data = wc.DownloadString(APIUrl + method + "/v1/driving/" + SOURCE_POSITION + urlString);
+            }
+            else if (method == "route")
+            {
+                data = wc.DownloadString(APIUrl + method + "/v1/driving/" + urlString + "?overview=false&steps=false");
+            }
+
             return JsonConvert.DeserializeObject<T>(data);
         }
 
         private bool CheckCompatibility(RideDetails ride, string pickDateTime, double duration, int passengerCount, bool ovveride = false)
         {
-            if ((DateTime.Parse(pickDateTime).AddSeconds(duration) <= ride.DropoffTime || ovveride) && (passengerCount + ride.PassengerCount) <= MAX_PASSENGER_COUNT)
+            if ((DateTime.Parse(pickDateTime).AddMinutes(duration) <= ride.DropoffTime || ovveride) && (passengerCount + ride.PassengerCount) <= MAX_PASSENGER_COUNT)
             {
                 return true;
             }
             return false;
         }
 
-        private void SaveTrip(RideDetails ride, int cabId, long simulationId, string pickupDateTime, string dropoffDateTime)
+        private void SaveTrip(RideDetails ride, int cabId, long simulationId, string pickupDateTime, string dropoffDateTime, int sequenceNum)
         {
             TripDetails trip = new TripDetails();
             trip.CabId = cabId;
@@ -165,6 +161,7 @@ namespace RideSharing.BL
             trip.DelayTime = ride.WaitTime;
             trip.WalkTime = ride.WalkTime;
             trip.PassengerCount = ride.PassengerCount;
+            trip.SequenceNum = sequenceNum;
             tripDetails.Add(trip);
 
             ridesProcessed.Add(ride.RideDetailsId);
@@ -172,57 +169,96 @@ namespace RideSharing.BL
 
         private string GetDropoffTime(string startTime, double duration)
         {
-            var date = DateTime.Parse(startTime).AddSeconds(duration);
+            var date = DateTime.Parse(startTime).AddMinutes(duration);
             return date.ToString();
         }
 
-        private void CheckForWalkingCondition(RideDetails ride, string dropoffTime, int cabId, long simulationId, string startDateTime)
+        private void CheckForWalkingCondition(RideDetails ride, string dropoffTime, int cabId, long simulationId, string startDateTime, int sequenceNum)
         {
             var compatibleWalkingRides = CheckIfAnyRidesAreWithinWalkingDistance(ride, dropoffTime);
             for (int i = 0; i < compatibleWalkingRides.Count && i < 2; i++)
             {
-                SaveTrip(compatibleWalkingRides[i], cabId, simulationId, startDateTime, dropoffTime);
+                SaveTrip(compatibleWalkingRides[i], cabId, simulationId, startDateTime, dropoffTime, ++sequenceNum);
             }
-            cabId++;
         }
 
-        private void CheckForCarSharingCondition(RideDetails ride, string dropoffTime, int cabId, long simulationId, string startDateTime)
+        private double GetDistance(List<RideSharingPosition> positions)
         {
-            var compatibleWalkingRides = CheckIfAnyRidesAreWithinWalkingDistance(ride, dropoffTime);
-            for (int i = 0; i < compatibleWalkingRides.Count && i < 2; i++)
+            var query = GetCoordinatesAsString(positions);
+            OSRMRoute route = GetDataFromServer<OSRMRoute>(query, "route");
+            return route.routes[0].distance * 0.000621371;
+        }
+
+        private void CheckForCarSharingCondition(RideDetails ride, string dropoffTime, int cabId, long simulationId, string startDateTime, int sequenceNUm)
+        {
+            List<RideSharingPosition> positions = new List<RideSharingPosition>();
+            positions.Add(new RideSharingPosition() { Latitude = 40.6599388, Longitude = -73.8056301 });
+            positions.Add(ride.Destination);
+            var distance = GetDistance(positions);
+
+            var compatibleRides = CheckIfAnyRidesAreWithinRadius(ride, dropoffTime, distance);
+            for (int i = 0; i < compatibleRides.Count && i < 2; i++)
             {
-                SaveTrip(compatibleWalkingRides[i], cabId, simulationId, startDateTime, dropoffTime);
+                SaveTrip(compatibleRides[i], cabId, simulationId, startDateTime, dropoffTime, ++sequenceNUm);
             }
-            cabId++;
         }
 
         private List<RideDetails> CheckIfAnyRidesAreWithinWalkingDistance(RideDetails ride, string pickupDateTime)
         {
             SortedList<DateTime, RideDetails> tempRides = new SortedList<DateTime, RideDetails>(new DuplicateKeyComparer<DateTime>());
-            int tempPassengerCount = 0;
 
-            //1 min = 0.66 miles
-            //2 min = 1.3 miles
-            //3 min = 1.99 miles
-
-            foreach (var rideDict in ride.TimeMatrix.Where(t => (t.Value / 60) < MAX_WALKING_RADIUS))
+            foreach (var rideDict in ride.TimeMatrix.Where(t => t.Value < MAX_WALKING_RADIUS))
             {
                 var tempRide = rideDetails[rideDict.Key - 1];
                 if (!ridesProcessed.Exists(r => r == tempRide.RideDetailsId) 
-                    && (tempRide.WalkTime <= ((rideDict.Value / 60) * AVG_SPEED_VEHICLE_PER_MINUTE))
+                    && (tempRide.WalkTime <= (rideDict.Value * AVG_SPEED_VEHICLE_PER_MINUTE))
                     && CheckCompatibility(tempRide, pickupDateTime, rideDict.Value, ride.PassengerCount))
                 {
                     tempRides.Add(tempRide.DropoffTime, tempRide);
-                    tempPassengerCount += tempRide.PassengerCount;
                 }
             }
 
             return tempRides.Values.ToList();
         }
 
-        private List<RideDetails> CheckIfAnyRidesAreWithinSmallRadius(RideDetails ride, string pickupDateTime)
+        private List<RideDetails> CheckIfAnyRidesAreWithinRadius(RideDetails ride, string pickupDateTime, double distance)
         {
+            SortedList<DateTime, RideDetails> tempRides = new SortedList<DateTime, RideDetails>(new DuplicateKeyComparer<DateTime>());
+            double remainingDistanceMin = (((MIN_PERCENTAGE * distance) / 100) * 2) - distance;
+            double remainingDistanceMax = (((MAX_PERCENTAGE * distance) / 100) * 3) - distance;
+
+            foreach (var rideDict in ride.TimeMatrix.Where(t => t.Value < (remainingDistanceMin / AVG_SPEED_VEHICLE_PER_MINUTE)))
+            {
+                var tempRide = rideDetails[rideDict.Key - 1];
+                if(!ridesProcessed.Exists(r => r == tempRide.RideDetailsId) && CheckCompatibility(tempRide, pickupDateTime, rideDict.Value, ride.PassengerCount))
+                {
+                    tempRides.Add(tempRide.DropoffTime, tempRide);
+                }
+            }         
+
+            return tempRides.Values.ToList(); 
+        }
+
+        private List<RideDetails> CheckForTriangleProperty(List<RideDetails> rides, string pickupDateTime, double remainingDistance)
+        {
+
+
             return new List<RideDetails>();
+        }
+    }
+
+
+    public class DuplicateKeyComparer<TKey> :
+             IComparer<TKey> where TKey : IComparable
+    {
+        public int Compare(TKey x, TKey y)
+        {
+            int result = x.CompareTo(y);
+
+            if (result == 0)
+                return 1;
+            else
+                return result;
         }
     }
 }

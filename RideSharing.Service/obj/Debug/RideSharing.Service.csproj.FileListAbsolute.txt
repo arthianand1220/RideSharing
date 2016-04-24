@@ -1,5 +1,0 @@
-D:\Classes\Database Systems\RideSharing\RideSharing.Service\bin\Debug\RideSharing.Service.exe.config
-D:\Classes\Database Systems\RideSharing\RideSharing.Service\bin\Debug\RideSharing.Service.exe
-D:\Classes\Database Systems\RideSharing\RideSharing.Service\bin\Debug\RideSharing.Service.pdb
-D:\Classes\Database Systems\RideSharing\RideSharing.Service\obj\Debug\RideSharing.Service.exe
-D:\Classes\Database Systems\RideSharing\RideSharing.Service\obj\Debug\RideSharing.Service.pdb

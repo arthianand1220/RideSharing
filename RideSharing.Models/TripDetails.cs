@@ -19,6 +19,8 @@ namespace RideSharing.Models
 
         public int PassengerCount { get; set; }
 
+        public int SequenceNum { get; set; }
+
         public SqlGeography Destination { get; set; }
 
         public DateTime PickupTime { get; set; }
