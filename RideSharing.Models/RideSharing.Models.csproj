@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OSRMDistanceMatrix.cs" />
+    <Compile Include="OSRMRoute.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="RideDetails.cs" />
     <Compile Include="RideDetailsDBRecord.cs" />

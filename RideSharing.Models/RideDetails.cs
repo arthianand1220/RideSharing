@@ -14,6 +14,8 @@ namespace RideSharing.Models
 
         public DateTime DropoffTime { get; set; }
 
+        public SortedDictionary<int, double> TimeMatrix { get; set; }
+
         public int PassengerCount { get; set; }
 
         public int WaitTime { get; set; }
@@ -23,6 +25,8 @@ namespace RideSharing.Models
         public RideDetails()
         {
             Destination = new RideSharingPosition();
+            TimeMatrix = new SortedDictionary<int, double>();
+            DropoffTime = DropoffTime.AddMinutes(WaitTime);
         }
     }
 }

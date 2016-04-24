@@ -5,10 +5,10 @@ namespace RideSharing.Contract
 {
     public interface ITripProcessor
     {
-        bool RunSimulations(string startDate, string endDate, int numSimulations, int poolSize);
+        bool RunSimulations(string StartDate, string EndDate, int NumSimulations, int PoolSize);
 
-        bool ProcessTrips(string startDate, string endDate);
+        bool ProcessTrips(long SimulationId, string StartDate, string EndDate);
 
-        List<TripDetails> GetTrips(long simulationId);
+        List<TripDetails> GetTrips(long SimulationId);
     }
 }

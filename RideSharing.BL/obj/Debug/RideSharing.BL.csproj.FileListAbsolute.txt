@@ -14,3 +14,5 @@ D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\RideSharing.Mod
 D:\Classes\Database Systems\RideSharing\RideSharing.BL\obj\Debug\RideSharing.BL.csprojResolveAssemblyReference.cache
 D:\Classes\Database Systems\RideSharing\RideSharing.BL\obj\Debug\RideSharing.BL.dll
 D:\Classes\Database Systems\RideSharing\RideSharing.BL\obj\Debug\RideSharing.BL.pdb
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\Newtonsoft.Json.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.BL\bin\Debug\Newtonsoft.Json.xml

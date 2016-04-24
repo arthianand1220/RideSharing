@@ -27,7 +27,7 @@ namespace RideSharing.BL
         public List<RideDetails> GetRides(string StartDate, string EndDate)
         {
             string tableName = GetTableName(StartDate);
-            return new List<RideDetails>();
+            return rdRepo.GetRideDetails(StartDate, EndDate, tableName);
         }
 
         private string GetTableName(string startDate)

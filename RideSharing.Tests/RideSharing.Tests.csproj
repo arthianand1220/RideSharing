@@ -55,7 +55,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="SqlServerTypes\Loader.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="TripProcessorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +79,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RideSharing.BL\RideSharing.BL.csproj">
+      <Project>{aad3eae8-d634-4a85-8df1-8d5437ef4a6a}</Project>
+      <Name>RideSharing.BL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RideSharing.Contract\RideSharing.Contract.csproj">
+      <Project>{78ed03e5-16ad-4c06-afb7-0d4d1df4f3a4}</Project>
+      <Name>RideSharing.Contract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RideSharing.DAL\RideSharing.DAL.csproj">
+      <Project>{97eb9519-1da7-4ab0-bd7d-249083ab0ac6}</Project>
+      <Name>RideSharing.DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RideSharing.Models\RideSharing.Models.csproj">
+      <Project>{bce59960-3017-4e91-8092-69d24b9cbbc5}</Project>
+      <Name>RideSharing.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

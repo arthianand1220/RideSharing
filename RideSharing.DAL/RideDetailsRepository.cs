@@ -94,11 +94,11 @@ namespace RideSharing.DAL
             {
                 connection.Open();
 
-                string getRecords = " SELECT Id, (DropoffDateTime - (PickupDateTime - " + StartDate + ")) As DropOffTime " +
+                string getRecords = " SELECT Id, (DropoffDateTime - (PickupDateTime - '" + StartDate + "')) As DropOffTime, " +
                                     " Destination.Lat, Destination.Long, PassengerCount, WaitTime, WalkTime " +
                                     " FROM " + TableName +
                                     " WHERE PickupDateTime >= '" + StartDate + "' " +
-                                    " AND PickupDateTime <= '" + EndDate + "'";
+                                    " AND PickupDateTime <= '" + EndDate + "' AND PassengerCount <= 4";
                 SqlCommand command = new SqlCommand(getRecords, connection);
                 var returnValue = command.ExecuteReader();
                 while(returnValue.Read())
@@ -113,6 +113,8 @@ namespace RideSharing.DAL
                     rideDetails.WalkTime = Convert.ToInt32(returnValue[6]);
                     returnData.Add(rideDetails);
                 }
+
+                connection.Close();
             }
             return returnData;
         }

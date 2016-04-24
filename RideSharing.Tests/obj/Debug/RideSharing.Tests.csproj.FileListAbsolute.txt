@@ -8,3 +8,14 @@ D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\Microsoft.Sq
 D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
 D:\Classes\Database Systems\RideSharing\RideSharing.Tests\obj\Debug\RideSharing.Tests.dll
 D:\Classes\Database Systems\RideSharing\RideSharing.Tests\obj\Debug\RideSharing.Tests.pdb
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\RideSharing.BL.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\RideSharing.Contract.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\RideSharing.DAL.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\RideSharing.Models.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\Newtonsoft.Json.dll
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\RideSharing.BL.pdb
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\RideSharing.Contract.pdb
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\RideSharing.DAL.pdb
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\RideSharing.Models.pdb
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\bin\Debug\Newtonsoft.Json.xml
+D:\Classes\Database Systems\RideSharing\RideSharing.Tests\obj\Debug\RideSharing.Tests.csprojResolveAssemblyReference.cache
