@@ -71,7 +71,7 @@
         }
 
         function getRecords() {
-            $.post("/ProcessData/GetRecords", { startDateTime: $('#startRange').val(), endDateTime: $('#endRange').val() })
+            $.post("~/ProcessData/GetRecords", { startDateTime: $('#startRange').val(), endDateTime: $('#endRange').val() })
              .done(function (data) {
                  if (data.length > 0) {
                      var records = JSON.parse(data);
