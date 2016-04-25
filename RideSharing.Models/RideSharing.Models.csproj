@@ -46,11 +46,12 @@
   <ItemGroup>
     <Compile Include="OSRMDistanceMatrix.cs" />
     <Compile Include="OSRMRoute.cs" />
-    <Compile Include="Position.cs" />
+    <Compile Include="RideSharingPosition.cs" />
     <Compile Include="RideDetails.cs" />
     <Compile Include="RideDetailsDBRecord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
+    <Compile Include="TriangleProperty.cs" />
     <Compile Include="TripDetails.cs" />
   </ItemGroup>
   <ItemGroup>

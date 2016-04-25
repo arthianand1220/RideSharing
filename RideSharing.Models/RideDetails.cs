@@ -22,11 +22,17 @@ namespace RideSharing.Models
 
         public int WalkTime { get; set; }
 
+        public double DistanceTravelled { get; set; }
+
+        public double DurationTravelled { get; set; }
+
         public RideDetails()
         {
             Destination = new RideSharingPosition();
             TimeMatrix = new SortedDictionary<int, double>();
             DropoffTime = DropoffTime.AddMinutes(WaitTime);
+            DistanceTravelled = 0;
+            DurationTravelled = 0;
         }
     }
 }

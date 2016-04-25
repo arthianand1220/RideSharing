@@ -16,7 +16,17 @@ namespace RideSharing.Tests
             IRideProcessor rideProcessor = new RideProcessor(rideDetailsrepo);
             TripProcessor tripProcessor = new TripProcessor(rideDetailsrepo, rideProcessor, "http://192.168.0.113:5000/");
 
-            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121212, "02/12/2013 15:30 PM", "02/12/2013 15:35 PM"));            
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121212, "02/4/2013 15:30 PM", "02/4/2013 15:35 PM"));            
+        }
+
+        [TestMethod]
+        public void TestProcessTripsForMediumPoolSize_Valid()
+        {
+            RideDetailsRepository rideDetailsrepo = new RideDetailsRepository();
+            IRideProcessor rideProcessor = new RideProcessor(rideDetailsrepo);
+            TripProcessor tripProcessor = new TripProcessor(rideDetailsrepo, rideProcessor, "http://192.168.0.113:5000/");
+
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121212, "02/16/2013 1:10 PM", "02/16/2013 1:20 PM"));
         }
 
         [TestMethod]
@@ -26,7 +36,7 @@ namespace RideSharing.Tests
             IRideProcessor rideProcessor = new RideProcessor(rideDetailsrepo);
             TripProcessor tripProcessor = new TripProcessor(rideDetailsrepo, rideProcessor, "http://192.168.0.113:5000/");
 
-            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121212, "02/12/2013 16:00 PM", "02/12/2013 16:30 PM"));
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121212, "02/4/2013 16:00 PM", "02/4/2013 16:30 PM"));
         }
     }
 }
