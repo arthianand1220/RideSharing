@@ -95,7 +95,7 @@ namespace RideSharing.DAL
                 connection.Open();
 
                 string getRecords = " SELECT Id, (DropoffDateTime - (PickupDateTime - '" + StartDate + "')) As DropOffTime, " +
-                                    " Destination.Lat, Destination.Long, PassengerCount, WaitTime, WalkTime " +
+                                    " Destination.Lat, Destination.Long, PassengerCount, WaitTime, WalkTime, Distance, Duration" +
                                     " FROM " + TableName +
                                     " WHERE PickupDateTime >= '" + StartDate + "' " +
                                     " AND PickupDateTime <= '" + EndDate + "' AND PassengerCount <= 4";
@@ -111,6 +111,8 @@ namespace RideSharing.DAL
                     rideDetails.PassengerCount = Convert.ToInt32(returnValue[4]);
                     rideDetails.WaitTime = Convert.ToInt32(returnValue[5]);
                     rideDetails.WalkTime = Convert.ToInt32(returnValue[6]);
+                    rideDetails.ActualDistanceTravelled = Convert.ToDouble(returnValue[7]);
+                    rideDetails.ActualDurationTravelled = Convert.ToDouble(returnValue[8]) / 60;
                     returnData.Add(rideDetails);
                 }
 

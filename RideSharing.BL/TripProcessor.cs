@@ -10,6 +10,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
 using Microsoft.SqlServer.Types;
+using System.Diagnostics;
 
 namespace RideSharing.BL
 {
@@ -26,13 +27,14 @@ namespace RideSharing.BL
         private List<TripDetails> tripDetails;
         private static int MAX_WALKING_RADIUS = 3;
         private static int MAX_PASSENGER_COUNT = 4;
-        private static double AVG_SPEED_VEHICLE = 45;
+        private static double AVG_SPEED_VEHICLE = 23;
         private static double AVG_SPEED_VEHICLE_PER_MINUTE = (AVG_SPEED_VEHICLE / 60);
         private static string SOURCE_POSITION = "-73.8056301,40.6599388;";
         private static int MIN_PERCENTAGE = 80;
         private static int MAX_PERCENTAGE = 60;
         private static double METRES_TO_MILES = 0.000621371;
         private static double MAX_WALK_PER_MINUTE = 0.05;
+        private int loneRequests = 0;
 
         #endregion Private Variables
 
@@ -58,6 +60,8 @@ namespace RideSharing.BL
         {
             rideDetails = rideProcessor.GetRides(StartDateTime, EndDateTime);
             var rideSharingCoordinates = rideDetails.Select(r => r.Destination).ToList();
+            AVG_SPEED_VEHICLE = (rideDetails.Sum(r => r.ActualDistanceTravelled) / rideDetails.Sum(r => r.ActualDurationTravelled / 3600)) / rideDetails.Count;
+            AVG_SPEED_VEHICLE_PER_MINUTE = AVG_SPEED_VEHICLE / 60;
 
             if (ConstructDistanceMatrixFromSource(rideSharingCoordinates))
             {
@@ -76,8 +80,10 @@ namespace RideSharing.BL
                     }
                 }
 
-                Console.WriteLine(tripDetails.GroupBy(g => g.CabId).ToList().Count);
-                Console.WriteLine(tripDetails.Sum(s => s.PassengerCount));
+                Trace.WriteLine("Total Rides: " + ridesProcessed.Count);
+                Trace.WriteLine("Total Cabs: " + tripDetails.GroupBy(g => g.CabId).ToList().Count);
+                Trace.WriteLine("Lone Requests: " + loneRequests);
+                Trace.WriteLine("Total Passengers: " + tripDetails.Sum(s => s.PassengerCount));
 
                 if (ridesProcessed.Count == rideDetails.Count)
                     return true;
@@ -134,11 +140,11 @@ namespace RideSharing.BL
             return coordinates.Substring(0, coordinates.Length - 1);
         }
 
-        private T GetDataFromServer<T>(string urlString, string method, bool steps=false)
+        private T GetDataFromServer<T>(string urlString, string method, bool steps = false)
         {
             WebClient wc = new WebClient();
             string data = "";
-            if(method == "table")
+            if (method == "table")
             {
                 data = wc.DownloadString(APIUrl + method + "/v1/driving/" + SOURCE_POSITION + urlString);
             }
@@ -146,7 +152,7 @@ namespace RideSharing.BL
             {
                 data = wc.DownloadString(APIUrl + method + "/v1/driving/" + urlString + "?overview=false&steps=false");
             }
-            else if(method == "route")
+            else if (method == "route")
             {
                 data = wc.DownloadString(APIUrl + method + "/v1/driving/" + urlString + "?steps=true");
             }
@@ -219,9 +225,9 @@ namespace RideSharing.BL
             ride.DistanceTravelled = distance;
 
             var compatibleRides = CheckIfAnyRidesAreWithinRadius(ride, dropoffTime);
-            if(compatibleRides.Count > 0)
+            if (compatibleRides.Count > 0)
             {
-                compatibleRides = new List<RideDetails>(MergeCommonTrips(ride, compatibleRides, dropoffTime, distance));
+                compatibleRides = new List<RideDetails>(MergeCommonTrips(ride, compatibleRides, dropoffTime));
                 for (int i = 0; i < compatibleRides.Count && i < 2; i++)
                 {
                     SaveTrip(compatibleRides[i], cabId, simulationId, startDateTime, dropoffTime, ++sequenceNUm);
@@ -236,7 +242,7 @@ namespace RideSharing.BL
             foreach (var rideDict in ride.TimeMatrix.Where(t => t.Value < MAX_WALKING_RADIUS))
             {
                 var tempRide = rideDetails[rideDict.Key - 1];
-                if (!ridesProcessed.Exists(r => r == tempRide.RideDetailsId) 
+                if (!ridesProcessed.Exists(r => r == tempRide.RideDetailsId)
                     && (tempRide.WalkTime <= (rideDict.Value * AVG_SPEED_VEHICLE_PER_MINUTE))
                     && CheckCompatibility(tempRide, pickupDateTime, rideDict.Value, ride.PassengerCount))
                 {
@@ -254,7 +260,7 @@ namespace RideSharing.BL
 
             foreach (var rideDict in ride.TimeMatrix.Where(t => t.Value < (radiusToSearch / AVG_SPEED_VEHICLE_PER_MINUTE) / 2))
             {
-                if(rideDict.Key != 0)
+                if (rideDict.Key != 0)
                 {
                     var tempRide = rideDetails[rideDict.Key - 1];
                     if (!ridesProcessed.Exists(r => r == tempRide.RideDetailsId)
@@ -263,66 +269,125 @@ namespace RideSharing.BL
                         tempRides.Add(tempRide.DropoffTime, tempRide);
                     }
                 }
-            }         
-
-            return tempRides.Values.ToList(); 
+            }
+            return tempRides.Values.ToList();
         }
 
-        private List<RideDetails> MergeCommonTrips(RideDetails sourceRide, List<RideDetails> rides, string pickupDateTime, double distance)
+        private List<RideDetails> MergeCommonTrips(RideDetails sourceRide, List<RideDetails> rides, string pickupDateTime)
         {
             List<RideDetails> selectedRides = new List<RideDetails>();
+            int requestsChecked = 0;
+            int maxlimit = rides.Count;
 
-            if(rides.Count > 1)
+            if (rides.Count > 40)
+            {
+                maxlimit = (rides.Count * 20) / 100;
+            }
+
+            if (rides.Count > 1)
             {
                 for (int i = 1; i < rides.Count; i++)
                 {
-                    for (int j = i; j < rides.Count; j++)
+                    requestsChecked = 0;
+                    for (int j = i; j < rides.Count && requestsChecked++ < maxlimit; j++)
                     {
-                        if (rides[i] != rides[j])
+                        if (rides[i] != rides[j] && (sourceRide.PassengerCount + rides[i].PassengerCount + rides[j].PassengerCount <= MAX_PASSENGER_COUNT))
                         {
+                            var tempSelectedRides = CheckForDirectToDestinationRequest(sourceRide, rides[i], rides[j]);
+                            for (int k = 0; k < tempSelectedRides.Count; k += 2)
+                            {
+                                if (CheckCompatibility(tempSelectedRides[k], pickupDateTime, tempSelectedRides[k].DurationTravelled, sourceRide.PassengerCount)
+                                        && CheckCompatibility(tempSelectedRides[k + 1], pickupDateTime, tempSelectedRides[k + 1].DurationTravelled, sourceRide.PassengerCount + tempSelectedRides[k].PassengerCount))
+                                {
+                                    selectedRides.Add(tempSelectedRides[k]);
+                                    selectedRides.Add(tempSelectedRides[k + 1]);
+                                    return selectedRides;
+                                }
+                            }
+
                             RideSharingPosition centroid = new RideSharingPosition();
                             centroid.Latitude = (sourceRide.Destination.Latitude + rides[i].Destination.Latitude + rides[j].Destination.Latitude) / 3;
                             centroid.Longitude = (sourceRide.Destination.Longitude + rides[i].Destination.Longitude + rides[j].Destination.Longitude) / 3;
-                            selectedRides = CheckForTriangleProperty(sourceRide, rides[i], rides[j], centroid, distance);
+                            tempSelectedRides = CheckForTriangleProperty(sourceRide, rides[i], rides[j], centroid);
                             if (
-                                selectedRides.Count == 2
-                                && CheckCompatibility(selectedRides[0], pickupDateTime, selectedRides[0].DurationTravelled, sourceRide.PassengerCount)
-                                && CheckCompatibility(selectedRides[1], pickupDateTime, selectedRides[1].DurationTravelled, sourceRide.PassengerCount + selectedRides[0].PassengerCount)
+                                tempSelectedRides.Count == 2
+                                && CheckCompatibility(tempSelectedRides[0], pickupDateTime, tempSelectedRides[0].DurationTravelled, sourceRide.PassengerCount)
+                                && CheckCompatibility(tempSelectedRides[1], pickupDateTime, tempSelectedRides[1].DurationTravelled, sourceRide.PassengerCount + tempSelectedRides[0].PassengerCount)
                                )
                             {
-                                selectedRides.Add(selectedRides[0]);
-                                selectedRides.Add(selectedRides[1]);
+                                selectedRides.Add(tempSelectedRides[0]);
+                                selectedRides.Add(tempSelectedRides[1]);
                                 return selectedRides;
                             }
-                            else if (selectedRides.Count == 4)
+                            else if (tempSelectedRides.Count == 4)
                             {
-                                if( CheckCompatibility(selectedRides[0], pickupDateTime, selectedRides[0].DurationTravelled, sourceRide.PassengerCount)
-                                    && CheckCompatibility(selectedRides[1], pickupDateTime, selectedRides[1].DurationTravelled, sourceRide.PassengerCount + selectedRides[0].PassengerCount))
+                                if (CheckCompatibility(tempSelectedRides[0], pickupDateTime, tempSelectedRides[0].DurationTravelled, sourceRide.PassengerCount)
+                                    && CheckCompatibility(tempSelectedRides[1], pickupDateTime, tempSelectedRides[1].DurationTravelled, sourceRide.PassengerCount + tempSelectedRides[0].PassengerCount))
                                 {
-                                    selectedRides.Add(selectedRides[0]);
-                                    selectedRides.Add(selectedRides[1]);
+                                    selectedRides.Add(tempSelectedRides[0]);
+                                    selectedRides.Add(tempSelectedRides[1]);
                                     return selectedRides;
                                 }
-                                else if (CheckCompatibility(selectedRides[2], pickupDateTime, selectedRides[2].DurationTravelled, sourceRide.PassengerCount)
-                                    && CheckCompatibility(selectedRides[3], pickupDateTime, selectedRides[3].DurationTravelled, sourceRide.PassengerCount + selectedRides[2].PassengerCount)
+                                else if (CheckCompatibility(tempSelectedRides[2], pickupDateTime, tempSelectedRides[2].DurationTravelled, sourceRide.PassengerCount)
+                                    && CheckCompatibility(tempSelectedRides[3], pickupDateTime, tempSelectedRides[3].DurationTravelled, sourceRide.PassengerCount + tempSelectedRides[2].PassengerCount)
                                     )
                                 {
-                                    selectedRides.Add(selectedRides[2]);
-                                    selectedRides.Add(selectedRides[3]);
+                                    selectedRides.Add(tempSelectedRides[2]);
+                                    selectedRides.Add(tempSelectedRides[3]);
                                     return selectedRides;
                                 }
                             }
                         }
                     }
                 }
-            }     
+            }
+            else if (rides.Count == 1)
+            {
+                loneRequests++;
+            }
 
             return new List<RideDetails>();
         }
 
-        private List<RideDetails> CheckForTriangleProperty(RideDetails sourceRide, RideDetails point1, RideDetails point2, RideSharingPosition centroid, double distance)
+        private List<RideDetails> CheckForDirectToDestinationRequest(RideDetails sourceRide, RideDetails point1, RideDetails point2)
         {
-            double remainingDistanceMax = (((MAX_PERCENTAGE * distance) / 100) * 3) - distance;
+            double remainingDistance = (((MAX_PERCENTAGE * sourceRide.DistanceTravelled) / 100) * 3) - sourceRide.DistanceTravelled;
+            List<RideDetails> rideDetails = new List<RideDetails>();
+
+            double source2Point1 = sourceRide.TimeMatrix[rideDetails.FindIndex(r => r.RideDetailsId == point1.RideDetailsId) + 1] * AVG_SPEED_VEHICLE_PER_MINUTE;
+            double source2Point2 = sourceRide.TimeMatrix[rideDetails.FindIndex(r => r.RideDetailsId == point2.RideDetailsId) + 1] * AVG_SPEED_VEHICLE_PER_MINUTE;
+            double point12Point2 = point1.TimeMatrix[rideDetails.FindIndex(r => r.RideDetailsId == point2.RideDetailsId) + 1] * AVG_SPEED_VEHICLE_PER_MINUTE;
+            double point22Point1 = point2.TimeMatrix[rideDetails.FindIndex(r => r.RideDetailsId == point1.RideDetailsId) + 1] * AVG_SPEED_VEHICLE_PER_MINUTE;
+
+            if (source2Point1 + point12Point2 <= remainingDistance)
+            {
+                point1.DistanceTravelled = source2Point1;
+                point2.DistanceTravelled = source2Point1 + point12Point2;
+
+                point1.DurationTravelled = point1.DistanceTravelled / AVG_SPEED_VEHICLE_PER_MINUTE;
+                point2.DurationTravelled = point2.DistanceTravelled / AVG_SPEED_VEHICLE_PER_MINUTE;
+
+                rideDetails.Add(point1);
+                rideDetails.Add(point2);
+            }
+
+            if (source2Point2 + point22Point1 <= remainingDistance)
+            {
+                point1.DistanceTravelled = source2Point2 + point22Point1;
+                point2.DistanceTravelled = source2Point2;
+
+                point1.DurationTravelled = point1.DistanceTravelled / AVG_SPEED_VEHICLE_PER_MINUTE;
+                point2.DurationTravelled = point2.DistanceTravelled / AVG_SPEED_VEHICLE_PER_MINUTE;
+
+                rideDetails.Add(point2);
+                rideDetails.Add(point1);
+            }
+            return rideDetails;
+        }
+
+        private List<RideDetails> CheckForTriangleProperty(RideDetails sourceRide, RideDetails point1, RideDetails point2, RideSharingPosition centroid)
+        {
+            double remainingDistance = (((MAX_PERCENTAGE * sourceRide.DistanceTravelled) / 100) * 3) - sourceRide.DistanceTravelled;
             List<RideDetails> rideDetails = new List<RideDetails>();
 
             List<RideSharingPosition> positions = new List<RideSharingPosition>();
@@ -349,7 +414,7 @@ namespace RideSharing.BL
             TriangleProperty point2Triangle = GetTrianglePropertyDetails(centroid, point2, route);
             point2.Destination = point2Triangle.Position;
 
-            if((sourceCentroidDist + point1Triangle.DriveDistance + point2Triangle.DriveDistance) <= remainingDistanceMax)
+            if ((sourceCentroidDist + point1Triangle.DriveDistance + point2Triangle.DriveDistance) <= remainingDistance)
             {
                 if (point1Triangle.DriveDistance > 0 && point2Triangle.DriveDistance > 0)
                 {
@@ -365,42 +430,42 @@ namespace RideSharing.BL
                     double p22p1Distance = trip.trips[0].legs[1].distance * METRES_TO_MILES;
                     double p22p1Time = trip.trips[0].legs[1].duration / 60;
 
-                    var newPoint1 = point1;
+                    var newPoint1 = (RideDetails)point1.Clone();
                     point1.DistanceTravelled = sourceCentroidDist + point1Triangle.DriveDistance;
                     point1.DurationTravelled = sourceCentroidTime + point1Triangle.DriveTime;
 
                     newPoint1.DistanceTravelled = sourceCentroidDist + point2Triangle.DriveDistance + p22p1Distance;
                     newPoint1.DurationTravelled = sourceCentroidTime + point2Triangle.DriveTime + p22p1Time;
-                    
 
-                    var newPoint2 = point2;
+
+                    var newPoint2 = (RideDetails)point2.Clone();
                     point2.DistanceTravelled = sourceCentroidDist + point2Triangle.DriveDistance;
                     point2.DurationTravelled = sourceCentroidTime + point2Triangle.DriveTime;
 
                     newPoint2.DistanceTravelled = sourceCentroidDist + point1Triangle.DriveDistance + p12p2Distance;
                     newPoint2.DurationTravelled = sourceCentroidTime + point1Triangle.DriveTime + p12p2Time;
 
-                    if(sourceCentroidDist + newPoint2.DistanceTravelled <= remainingDistanceMax)
+                    if (sourceCentroidDist + newPoint2.DistanceTravelled <= remainingDistance)
                     {
                         rideDetails.Add(point1);
                         rideDetails.Add(newPoint2);
                     }
 
-                    if(sourceCentroidDist + point2.DistanceTravelled <= remainingDistanceMax)
+                    if (sourceCentroidDist + point2.DistanceTravelled <= remainingDistance)
                     {
                         rideDetails.Add(newPoint1);
                         rideDetails.Add(point2);
                     }
                 }
                 else
-                { 
+                {
                     point1.DistanceTravelled = sourceCentroidDist + point1Triangle.DriveDistance;
                     point1.DurationTravelled = sourceCentroidTime + point1Triangle.DriveTime;
                     rideDetails.Add(point1);
 
                     point2.DistanceTravelled = sourceCentroidDist + point2Triangle.DriveDistance;
                     point2.DurationTravelled = sourceCentroidTime + point2Triangle.DriveTime;
-                    rideDetails.Add(point2);                                       
+                    rideDetails.Add(point2);
                 }
             }
 
@@ -412,21 +477,20 @@ namespace RideSharing.BL
             TriangleProperty triangle = new TriangleProperty();
 
             route.routes[0].legs[0].steps.Reverse();
-            triangle.MaxWalkDistance = ride.WalkTime * MAX_WALK_PER_MINUTE;
             triangle.DriveDistance = route.routes[0].distance * METRES_TO_MILES;
             triangle.DriveTime = route.routes[0].duration / 60;
 
             foreach (var r in route.routes[0].legs[0].steps)
             {
-                if (triangle.WalkDistance + (r.distance * METRES_TO_MILES) <= triangle.MaxWalkDistance)
+                if (triangle.WalkDistance + (r.distance * METRES_TO_MILES) <= (ride.WalkTime * MAX_WALK_PER_MINUTE))
                 {
                     triangle.WalkDistance += (r.distance * METRES_TO_MILES);
                     triangle.DriveTime -= (r.duration / 60);
+                    triangle.Position.Latitude = r.maneuver.location[1];
+                    triangle.Position.Longitude = r.maneuver.location[0];
                 }
                 else
                 {
-                    triangle.Position.Latitude = r.maneuver.location[1];
-                    triangle.Position.Longitude = r.maneuver.location[0];
                     break;
                 }
             }

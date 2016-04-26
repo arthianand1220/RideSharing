@@ -10,8 +10,6 @@ namespace RideSharing.Models
     {
         public double WalkDistance { get; set; }
 
-        public double MaxWalkDistance { get; set; }
-
         public double DriveDistance { get; set; }
 
         public double DriveTime { get; set; }

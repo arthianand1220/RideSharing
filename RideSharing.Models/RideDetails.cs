@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RideSharing.Models
 {
-    public class RideDetails
+    public class RideDetails : ICloneable
     {
         public long RideDetailsId { get; set; }
 
@@ -26,6 +26,10 @@ namespace RideSharing.Models
 
         public double DurationTravelled { get; set; }
 
+        public double ActualDistanceTravelled { get; set; }
+
+        public double ActualDurationTravelled { get; set; }
+
         public RideDetails()
         {
             Destination = new RideSharingPosition();
@@ -33,6 +37,23 @@ namespace RideSharing.Models
             DropoffTime = DropoffTime.AddMinutes(WaitTime);
             DistanceTravelled = 0;
             DurationTravelled = 0;
+        }
+
+        public object Clone()
+        {
+            RideDetails ride = new RideDetails();
+            ride.RideDetailsId = RideDetailsId;
+            ride.Destination = Destination;
+            ride.DropoffTime = DropoffTime;
+            ride.TimeMatrix = TimeMatrix;
+            ride.PassengerCount = PassengerCount;
+            ride.WaitTime = WaitTime;
+            ride.WalkTime = WalkTime;
+            ride.DistanceTravelled = DistanceTravelled;
+            ride.DurationTravelled = DurationTravelled;
+            ride.ActualDistanceTravelled = ActualDistanceTravelled;
+            ride.ActualDurationTravelled = ActualDurationTravelled;
+            return ride;            
         }
     }
 }
