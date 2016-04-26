@@ -11,17 +11,26 @@ namespace RideSharing.Tests
     public class TripProcessorTests
     {
         string URL = "http://192.168.0.114:5000/";
+        RideDetailsRepository rideDetailsRepo;
+        TripDetailsRepository tripDetailsRepo;
+        IRideProcessor rideProcessor;
+        ITripProcessor tripProcessor;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            rideDetailsRepo = new RideDetailsRepository();
+            tripDetailsRepo = new TripDetailsRepository();
+            rideProcessor = new RideProcessor(rideDetailsRepo);
+            tripProcessor = new TripProcessor(tripDetailsRepo, rideProcessor, URL);
+        }
 
         [TestMethod]
         public void TestProcessTripsForSmallPoolSize_Valid()
         {
             Trace.WriteLine("Small Pool Size");
 
-            RideDetailsRepository rideDetailsrepo = new RideDetailsRepository();
-            IRideProcessor rideProcessor = new RideProcessor(rideDetailsrepo);
-            TripProcessor tripProcessor = new TripProcessor(rideDetailsrepo, rideProcessor, URL);
-
-            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121212, "02/4/2013 15:30 PM", "02/4/2013 15:35 PM"));            
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121216, "02/4/2013 15:30 PM", "02/4/2013 15:35 PM"));            
         }
 
         [TestMethod]
@@ -29,11 +38,7 @@ namespace RideSharing.Tests
         {
             Trace.WriteLine("Medium Pool Size");
 
-            RideDetailsRepository rideDetailsrepo = new RideDetailsRepository();
-            IRideProcessor rideProcessor = new RideProcessor(rideDetailsrepo);
-            TripProcessor tripProcessor = new TripProcessor(rideDetailsrepo, rideProcessor, URL);
-
-            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121212, "02/16/2013 1:10 PM", "02/16/2013 1:25 PM"));
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121217, "02/16/2013 1:10 PM", "02/16/2013 1:25 PM"));
         }
 
         [TestMethod]
@@ -41,11 +46,7 @@ namespace RideSharing.Tests
         {
             Trace.WriteLine("Large Pool Size");
 
-            RideDetailsRepository rideDetailsrepo = new RideDetailsRepository();
-            IRideProcessor rideProcessor = new RideProcessor(rideDetailsrepo);
-            TripProcessor tripProcessor = new TripProcessor(rideDetailsrepo, rideProcessor, URL);
-
-            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121212, "02/4/2013 16:00 PM", "02/4/2013 16:20 PM"));
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121218, "02/4/2013 16:00 PM", "02/4/2013 16:20 PM"));
         }
 
         [TestMethod]
@@ -53,11 +54,7 @@ namespace RideSharing.Tests
         {
             Trace.WriteLine("Extra Large Pool Size");
 
-            RideDetailsRepository rideDetailsrepo = new RideDetailsRepository();
-            IRideProcessor rideProcessor = new RideProcessor(rideDetailsrepo);
-            TripProcessor tripProcessor = new TripProcessor(rideDetailsrepo, rideProcessor, URL);
-
-            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121212, "02/4/2013 16:00 PM", "02/4/2013 16:30 PM"));
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121219, "02/4/2013 16:00 PM", "02/4/2013 16:30 PM"));
         }
     }
 }

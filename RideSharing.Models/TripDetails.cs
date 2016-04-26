@@ -23,9 +23,11 @@ namespace RideSharing.Models
 
         public SqlGeography Destination { get; set; }
 
-        public DateTime PickupTime { get; set; }
+        public DateTime PickupDateTime { get; set; }
 
-        public DateTime DropoffTime { get; set; }
+        public DateTime DropoffDateTime { get; set; }
+
+        public DateTime ActualDropoffDateTime { get; set; }
 
         public int DelayTime { get; set; }
 

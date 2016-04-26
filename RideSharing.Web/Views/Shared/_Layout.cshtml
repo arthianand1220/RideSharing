@@ -7,6 +7,7 @@
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <link href="~/Content/table-fixed-header.css" rel="stylesheet" type="text/css" />
 
 </head>
 <body>
@@ -25,8 +26,8 @@
                 <ul class="nav navbar-nav pull-right">
                     <li class="@(Request.Url.AbsoluteUri.Contains("Home") ? "active" : "")"><a href="~/Home">Home</a></li>
                     <li class="@(Request.Url.AbsoluteUri.Contains("ProcessData") ? "active" : "")"><a href="~/ProcessData">Process Data</a></li>
-                    <li class="@(Request.Url.AbsoluteUri.Contains("Visualizations") ? "active" : "")"><a href="~/Visualizations">Visualizations</a></li>
-                    <li class="@(Request.Url.AbsoluteUri.Contains("API") ? "active" : "")"><a href="~/API">API</a></li>
+                    <li class="@(Request.Url.AbsoluteUri.Contains("Results") ? "active" : "")"><a href="~/Results">Results</a></li>
+                    <li class="@(Request.Url.AbsoluteUri.Contains("Metrics") ? "active" : "")"><a href="~/Metrics">Metrics</a></li>
                     <li class="@(Request.Url.AbsoluteUri.Contains("Team") ? "active" : "")"><a href="~/Team">Team</a></li>
                 </ul>
             </div>
@@ -37,12 +38,20 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Ride Sharing</p>
+            <div class="container text-center">
+                <p class="credit">
+
+                    &copy; @DateTime.Now.Year - Ride Sharing <br />
+                    Developed By:
+                    <a href="#">Murali Krishna Valluri</a>, <a href="#">Dilip Vakkalanka</a>, <a href="#">Spoorthi Pendyala</a>, <a href="#">Arthi Anand</a>
+                </p>
+            </div>
         </footer>
     </div>
 
     <script src="~/Scripts/jquery-2.2.3.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/table-fixed-header.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

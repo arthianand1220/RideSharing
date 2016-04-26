@@ -12,7 +12,7 @@ namespace RideSharing.DAL
         public long StoreRideDetails(List<RideDetailsDBRecord> RideDetails, string TableName)
         {
             long processedRecords = 0;
-            using (var connection = new SqlConnection("Data Source=.;Initial Catalog=RideSharing;Integrated Security=True"))
+            using (var connection = new SqlConnection(QueryString))
             {
                 connection.Open();
                 SqlTransaction transaction = connection.BeginTransaction();
@@ -111,8 +111,8 @@ namespace RideSharing.DAL
                     rideDetails.PassengerCount = Convert.ToInt32(returnValue[4]);
                     rideDetails.WaitTime = Convert.ToInt32(returnValue[5]);
                     rideDetails.WalkTime = Convert.ToInt32(returnValue[6]);
-                    rideDetails.ActualDistanceTravelled = Convert.ToDouble(returnValue[7]);
-                    rideDetails.ActualDurationTravelled = Convert.ToDouble(returnValue[8]) / 60;
+                    rideDetails.PreviousDistanceTravelled = Convert.ToDouble(returnValue[7]);
+                    rideDetails.PreviousDurationTravelled = Convert.ToDouble(returnValue[8]) / 60;
                     returnData.Add(rideDetails);
                 }
 

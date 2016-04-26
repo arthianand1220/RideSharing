@@ -9,6 +9,8 @@ namespace RideSharing.Contract
 
         bool ProcessTrips(long SimulationId, string StartDate, string EndDate);
 
+        List<long> GetSimulationIds();
+
         List<TripDetails> GetTrips(long SimulationId);
     }
 }

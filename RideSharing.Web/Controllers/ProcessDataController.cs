@@ -13,12 +13,12 @@ namespace RideSharingWeb.Controllers
 {
     public class ProcessDataController : Controller
     {
-        private IRideProcessor tripProcessor;
+        private IRideProcessor rideProcessor;
 
         public ProcessDataController()
         {
             RideDetailsRepository rideDetailsRepo = new RideDetailsRepository();
-            tripProcessor = new RideProcessor(rideDetailsRepo);
+            rideProcessor = new RideProcessor(rideDetailsRepo);
         }
 
         public ActionResult Index()
@@ -31,7 +31,7 @@ namespace RideSharingWeb.Controllers
         {
             if (DateTime.Compare(DateTime.Parse(startDateTime), DateTime.Parse(endDateTime)) < 0)
             {
-                List<RideSharingPosition> tempData = tripProcessor.GetRideLocations(startDateTime, endDateTime);
+                List<RideSharingPosition> tempData = rideProcessor.GetRideLocations(startDateTime, endDateTime);
                 FeatureCollection returnData = new FeatureCollection();
                 foreach (var data in tempData)
                 {                    

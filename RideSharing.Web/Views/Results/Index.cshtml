@@ -1,0 +1,72 @@
+﻿@model RideSharingWeb.Models.ResultsViewModel
+
+@{
+    ViewBag.Title = "Results";
+}
+
+<h2>Simualations</h2>
+
+@foreach (var simulation in Model.SimulationIds)
+{
+    <div class="panel-group">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#@simulation"><b>Simulation #</b> @Model.SimulationIds.IndexOf(simulation)</a>
+                </h4>
+            </div>
+            <div id="@simulation" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <div class="col-md-3">
+                        <div class="container-fluid">
+                            <h4>Summary</h4>
+                            <b>Simulation Id: </b> @simulation
+                            <br /><b>Total Trips Before: </b>@Model.Trips[simulation].Count
+                            <br /><b>Total Trips After RideSharing: </b>@Model.Trips[simulation].Select(s => s.CabId).Distinct().Count()
+                            <br /><b>Total Passenger Count: </b>@Model.Trips[simulation].Select(s => s.PassengerCount).Sum()
+                            <br /><b>Total Lone Trips: </b>
+                            <br /><b>Total Distance Saved: </b>
+                            <br /><b>Total Time Saved: </b>
+                        </div>
+                    </div>
+                    <div class="col-md-9" style="max-height: 20em; overflow-y: auto;">
+                        <table class="table table-fixed-header text-center table-striped table-hover">
+                            <tr>
+                                <th>Cab Id</th>
+                                <th>Ride Id</th>
+                                <th>Dropoff Time</th>
+                                <th>Actual Dropoff Time</th>
+                                <th># Passengers</th>
+                                <th>Delay Time</th>
+                                <th>Walking Time</th>
+                            </tr>
+                            @foreach (var trip in Model.Trips[simulation])
+                            {
+                                <tr>
+                                    <td>@trip.CabId</td>
+                                    <td>@trip.RideId</td>
+                                    <td>@trip.DropoffDateTime</td>
+                                    <td>@trip.ActualDropoffDateTime</td>
+                                    <td>@trip.PassengerCount</td>
+                                    <td>@trip.DelayTime</td>
+                                    <td>@trip.WalkTime</td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script language="javascript" type="text/javascript">
+        $(document).ready(function () {
+            
+            // make the header fixed on scroll
+            $('.table-fixed-header').fixedHeader();
+        });
+    </script>
+}
