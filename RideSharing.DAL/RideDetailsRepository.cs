@@ -98,7 +98,8 @@ namespace RideSharing.DAL
                                     " Destination.Lat, Destination.Long, PassengerCount, WaitTime, WalkTime, Distance, Duration" +
                                     " FROM " + TableName +
                                     " WHERE PickupDateTime >= '" + StartDate + "' " +
-                                    " AND PickupDateTime <= '" + EndDate + "' AND PassengerCount <= 4";
+                                    " AND PickupDateTime <= '" + EndDate + "' AND PassengerCount <= 4 " +
+                                    " ORDER BY DropOffTime";
                 SqlCommand command = new SqlCommand(getRecords, connection);
                 var returnValue = command.ExecuteReader();
                 while(returnValue.Read())

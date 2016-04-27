@@ -51,7 +51,7 @@ namespace RideSharing.BL
             sourceMatrix = new SortedDictionary<int, double>();
             tripDetails = new List<TripDetails>();
         }
-        
+
         public List<long> GetSimulationIds()
         {
             return tripDetailsRepo.GetSimulationIds();
@@ -79,6 +79,7 @@ namespace RideSharing.BL
                     if (!ridesProcessed.Exists(r => r == ride.RideDetailsId) && CheckCompatibility(ride, StartDateTime, sourceMatrix[index], 0, true))
                     {
                         var dropoffTime = GetDropoffTime(StartDateTime, sourceMatrix[index]);
+                        ride.CurrentDistanceTravelled = sourceMatrix[index] * AVG_SPEED_VEHICLE_PER_MINUTE;
                         SaveTrip(ride, cabId, SimulationId, StartDateTime, dropoffTime, 1);
                         int passengerCount = CheckForWalkingCondition(ride, dropoffTime, cabId, SimulationId, StartDateTime, 1);
                         CheckForCarSharingCondition(ride, dropoffTime, cabId, SimulationId, StartDateTime, 1, passengerCount);
@@ -89,7 +90,6 @@ namespace RideSharing.BL
                 Trace.WriteLine("Total Rides: " + ridesProcessed.Count);
                 Trace.WriteLine("Total Cabs: " + tripDetails.GroupBy(g => g.CabId).ToList().Count);
                 Trace.WriteLine("Lone Requests: " + loneRequests);
-                Trace.WriteLine("Total Passengers: " + tripDetails.Sum(s => s.PassengerCount));
 
                 if (WriteDataToDatabase() > 0 && ridesProcessed.Count == rideDetails.Count)
                     return true;
@@ -100,7 +100,35 @@ namespace RideSharing.BL
 
         public bool RunSimulations(string StartDateTime, string EndDateTime, int NumSimulations, int PoolSize)
         {
-            throw new NotImplementedException();
+            DateTime startDateTime = DateTime.Parse(StartDateTime);
+            DateTime endDateTime = DateTime.Parse(EndDateTime);
+            Random random = new Random();
+            int startMonth = startDateTime.Month;
+            int endMonth = endDateTime.Month;
+            int numOfMonths = endMonth - startMonth + 1;
+            int finalNumOfSimulations = NumSimulations / numOfMonths;
+            List<string> dates = new List<string>();
+
+            int curr_month = startMonth;
+
+            for (curr_month = startMonth; curr_month <= endMonth; ++curr_month)
+            {
+                for (int i = 0; i < finalNumOfSimulations; i++)
+                {
+
+                    DateTime start_date = new DateTime(startDateTime.Year, curr_month, 1);
+                    DateTime curr_date = start_date.AddDays(random.Next(25));                   
+                    TimeSpan startTime = TimeSpan.FromHours(6);
+                    TimeSpan endTime = TimeSpan.FromHours(20);
+                    int maxMinutes = (int)((endTime - startTime).TotalMinutes);
+                    int minutes = random.Next(0,maxMinutes);
+                    TimeSpan curr_startTime = startTime.Add(TimeSpan.FromMinutes(minutes));
+                    TimeSpan curr_endTime = curr_startTime.Add(TimeSpan.FromMinutes(PoolSize));
+                    dates.Add(curr_date.ToString("yyyy/MM/dd ") + curr_startTime.Hours.ToString("00") + ":" + curr_startTime.Minutes.ToString("00") + ":" + curr_startTime.Seconds.ToString("00") + " " + 
+                        curr_date.ToString("yyyy/MM/dd ") + curr_endTime.Hours.ToString("00") + ":" + curr_endTime.Minutes.ToString("00") + ":" + curr_endTime.Seconds.ToString("00"));
+                }
+            }
+            return true;
         }
 
         #endregion Interface Implementation
@@ -184,7 +212,7 @@ namespace RideSharing.BL
         }
 
         private void SaveTrip(RideDetails ride, int cabId, long simulationId, string pickupDateTime, string dropoffDateTime, int sequenceNum)
-        {            
+        {
             TripDetails trip = new TripDetails();
             trip.CabId = cabId;
             trip.SimulationId = simulationId;
@@ -192,10 +220,7 @@ namespace RideSharing.BL
             trip.Destination = SqlGeography.Point(ride.Destination.Latitude, ride.Destination.Longitude, 4326);
             trip.PickupDateTime = DateTime.Parse(pickupDateTime);
             trip.DropoffDateTime = DateTime.Parse(dropoffDateTime);
-            trip.ActualDropoffDateTime = ride.DropoffTime;
-            trip.DelayTime = ride.WaitTime;
-            trip.WalkTime = ride.WalkTime;
-            trip.PassengerCount = ride.PassengerCount;
+            trip.DistanceTravelled = ride.CurrentDistanceTravelled;
             trip.SequenceNum = sequenceNum;
             tripDetails.Add(trip);
 
@@ -215,7 +240,15 @@ namespace RideSharing.BL
             for (int i = 0; i < compatibleWalkingRides.Count && passengerCount <= MAX_PASSENGER_COUNT; i++)
             {
                 passengerCount += compatibleWalkingRides[i].PassengerCount;
-                SaveTrip(compatibleWalkingRides[i], cabId, simulationId, startDateTime, dropoffTime, ++sequenceNum);
+                if (passengerCount <= MAX_PASSENGER_COUNT)
+                {
+                    compatibleWalkingRides[i].CurrentDistanceTravelled = ride.CurrentDistanceTravelled;
+                    SaveTrip(compatibleWalkingRides[i], cabId, simulationId, startDateTime, dropoffTime, ++sequenceNum);
+                }
+                else
+                {
+                    passengerCount -= compatibleWalkingRides[i].PassengerCount;
+                }
             }
             return passengerCount;
         }
@@ -314,7 +347,7 @@ namespace RideSharing.BL
                             var tempSelectedRides = CheckForDirectToDestinationRequest(sourceRide, rides[i], rides[j]);
                             selectedRides = CheckForRideShareCompatibility(tempSelectedRides, sourceRide, pickupDateTime);
 
-                            if(selectedRides.Count > 0)
+                            if (selectedRides.Count > 0)
                             {
                                 return selectedRides;
                             }
@@ -381,15 +414,24 @@ namespace RideSharing.BL
         private List<RideDetails> CheckForRideShareCompatibility(List<RideDetails> rides, RideDetails sourceRide, string pickupDateTime)
         {
             List<RideDetails> returnData = new List<RideDetails>();
-
+            bool reverse = false;
             for (int k = 0; k < rides.Count; k += 2)
             {
                 if (CheckCompatibility(rides[k], pickupDateTime, rides[k].CurrentDurationTravelled, sourceRide.PassengerCount)
                         && CheckCompatibility(rides[k + 1], pickupDateTime, rides[k + 1].CurrentDurationTravelled, sourceRide.PassengerCount + rides[k].PassengerCount))
                 {
-                    returnData.Add(rides[k]);
-                    returnData.Add(rides[k + 1]);
+                    if (!reverse)
+                    {
+                        returnData.Add(rides[k]);
+                        returnData.Add(rides[k + 1]);
+                    }
+                    else
+                    {
+                        returnData.Add(rides[k + 1]);
+                        returnData.Add(rides[k]);
+                    }
                 }
+                reverse = true;
             }
 
             return returnData;
@@ -447,7 +489,7 @@ namespace RideSharing.BL
                     point1.CurrentDistanceTravelled = sourceCentroidDist + point1Triangle.DriveDistance;
                     point1.CurrentDurationTravelled = sourceCentroidTime + point1Triangle.DriveTime;
 
-                    newPoint1.CurrentDistanceTravelled = sourceCentroidDist + point2Triangle.DriveDistance + p22p1Distance;
+                    newPoint1.CurrentDistanceTravelled = sourceRide.CurrentDistanceTravelled + sourceCentroidDist + point2Triangle.DriveDistance + p22p1Distance;
                     newPoint1.CurrentDurationTravelled = sourceCentroidTime + point2Triangle.DriveTime + p22p1Time;
 
 
@@ -523,7 +565,7 @@ namespace RideSharing.BL
 
         #endregion Private Methods
     }
-    
+
     public class DuplicateKeyComparer<TKey> :
              IComparer<TKey> where TKey : IComparable
     {

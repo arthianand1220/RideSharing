@@ -30,7 +30,7 @@ namespace RideSharing.Tests
         {
             Trace.WriteLine("Small Pool Size");
 
-            Assert.AreEqual(true, tripProcessor.ProcessTrips(Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmss")), "02/4/2013 15:30 PM", "02/4/2013 15:35 PM"));            
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmss")), "06/4/2013 15:30 PM", "06/4/2013 15:35 PM"));            
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace RideSharing.Tests
         {
             Trace.WriteLine("Large Pool Size");
 
-            Assert.AreEqual(true, tripProcessor.ProcessTrips(Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmss")), "02/4/2013 16:00 PM", "02/4/2013 16:20 PM"));
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmss")), "06/4/2013 16:00 PM", "06/4/2013 16:20 PM"));
         }
 
         [TestMethod]
@@ -55,6 +55,14 @@ namespace RideSharing.Tests
             Trace.WriteLine("Extra Large Pool Size");
 
             Assert.AreEqual(true, tripProcessor.ProcessTrips(Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmss")), "02/4/2013 16:00 PM", "02/4/2013 16:30 PM"));
+        }
+
+        [TestMethod]
+        public void TestRunSimulations_Valid()
+        {
+            Trace.WriteLine("Run Simulations");
+
+            Assert.AreEqual(true, tripProcessor.RunSimulations("01/01/2013 00:00 PM", "12/01/2013 16:00 PM", 48, 10));
         }
     }
 }
