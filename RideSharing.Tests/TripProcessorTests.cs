@@ -62,7 +62,7 @@ namespace RideSharing.Tests
         {
             Trace.WriteLine("Run Simulations");
 
-            Assert.AreEqual(true, tripProcessor.RunSimulations("01/01/2013 00:00 PM", "12/01/2013 16:00 PM", 48, 10));
+            Assert.AreEqual(true, tripProcessor.RunSimulations("06/01/2013 00:00 PM", "06/27/2013 16:00 PM", 10, 20));
         }
     }
 }

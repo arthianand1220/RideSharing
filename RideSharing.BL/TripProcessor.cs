@@ -46,10 +46,16 @@ namespace RideSharing.BL
             tripDetailsRepo = TripDetailsRepo;
             rideProcessor = RideProcessor;
             APIUrl = APIURL;
+            InitializeApp();
+        }
+
+        private void InitializeApp()
+        {
             rideDetails = new List<RideDetails>();
             ridesProcessed = new List<long>();
             sourceMatrix = new SortedDictionary<int, double>();
             tripDetails = new List<TripDetails>();
+            loneRequests = 0;
         }
 
         public List<long> GetSimulationIds()
@@ -107,14 +113,14 @@ namespace RideSharing.BL
             int endMonth = endDateTime.Month;
             int numOfMonths = endMonth - startMonth + 1;
             int finalNumOfSimulations = NumSimulations / numOfMonths;
-            List<string> dates = new List<string>();
 
             int curr_month = startMonth;
-
+            bool status = true;
             for (curr_month = startMonth; curr_month <= endMonth; ++curr_month)
             {
-                for (int i = 0; i < finalNumOfSimulations; i++)
+                for (int i = 0; i < finalNumOfSimulations && status; i++)
                 {
+                    InitializeApp();
 
                     DateTime start_date = new DateTime(startDateTime.Year, curr_month, 1);
                     DateTime curr_date = start_date.AddDays(random.Next(25));                   
@@ -124,11 +130,13 @@ namespace RideSharing.BL
                     int minutes = random.Next(0,maxMinutes);
                     TimeSpan curr_startTime = startTime.Add(TimeSpan.FromMinutes(minutes));
                     TimeSpan curr_endTime = curr_startTime.Add(TimeSpan.FromMinutes(PoolSize));
-                    dates.Add(curr_date.ToString("yyyy/MM/dd ") + curr_startTime.Hours.ToString("00") + ":" + curr_startTime.Minutes.ToString("00") + ":" + curr_startTime.Seconds.ToString("00") + " " + 
-                        curr_date.ToString("yyyy/MM/dd ") + curr_endTime.Hours.ToString("00") + ":" + curr_endTime.Minutes.ToString("00") + ":" + curr_endTime.Seconds.ToString("00"));
+                    var startDate = curr_date.ToString("yyyy/MM/dd ") + curr_startTime.Hours.ToString("00") + ":" + curr_startTime.Minutes.ToString("00") + ":" + curr_startTime.Seconds.ToString("00");
+                    var endDate = curr_date.ToString("yyyy/MM/dd ") + curr_endTime.Hours.ToString("00") + ":" + curr_endTime.Minutes.ToString("00") + ":" + curr_endTime.Seconds.ToString("00");
+
+                    status = ProcessTrips(Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmss")), startDate, endDate);
                 }
             }
-            return true;
+            return status;
         }
 
         #endregion Interface Implementation
