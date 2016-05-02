@@ -30,6 +30,8 @@ namespace RideSharing.Models
 
         public double CurrentDurationTravelled { get; set; }
 
+        public string Sector { get; set; }
+
         public RideDetails()
         {
             Destination = new RideSharingPosition();
@@ -53,6 +55,7 @@ namespace RideSharing.Models
             ride.CurrentDurationTravelled = CurrentDurationTravelled;
             ride.PreviousDistanceTravelled = PreviousDistanceTravelled;
             ride.PreviousDurationTravelled = PreviousDurationTravelled;
+            ride.Sector = Sector;
             return ride;            
         }
     }

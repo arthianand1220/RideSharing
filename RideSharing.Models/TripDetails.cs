@@ -17,14 +17,20 @@ namespace RideSharing.Models
 
         public long RideId { get; set; }
 
+        public int PassengerCount { get; set; }
+
         public int SequenceNum { get; set; }
 
         public SqlGeography Destination { get; set; }
 
-        public double DistanceTravelled { get; set; }
-
         public DateTime PickupDateTime { get; set; }
 
         public DateTime DropoffDateTime { get; set; }
+
+        public DateTime ActualDropoffDateTime { get; set; }
+
+        public int DelayTime { get; set; }
+
+        public int WalkTime { get; set; }
     }
 }

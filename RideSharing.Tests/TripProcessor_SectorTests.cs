@@ -8,9 +8,9 @@ using System.Diagnostics;
 namespace RideSharing.Tests
 {
     [TestClass]
-    public class TripProcessorTests
+    public class TripProcessor_SectorTests
     {
-        string URL = "http://192.168.0.114:5000/";
+        string URL = "http://192.168.0.111:5000/";
         RideDetailsRepository rideDetailsRepo;
         TripDetailsRepository tripDetailsRepo;
         IRideProcessor rideProcessor;
@@ -22,7 +22,7 @@ namespace RideSharing.Tests
             rideDetailsRepo = new RideDetailsRepository();
             tripDetailsRepo = new TripDetailsRepository();
             rideProcessor = new RideProcessor(rideDetailsRepo);
-            tripProcessor = new TripProcessor(tripDetailsRepo, rideProcessor, URL);
+            tripProcessor = new TripProcessor_Sector(tripDetailsRepo, rideProcessor, URL);
         }
 
         [TestMethod]
@@ -30,7 +30,7 @@ namespace RideSharing.Tests
         {
             Trace.WriteLine("Small Pool Size");
 
-            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121216, "02/4/2013 15:30 PM", "02/4/2013 15:35 PM"));            
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121216, "06/4/2013 15:30 PM", "06/4/2013 15:35 PM"));            
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace RideSharing.Tests
         {
             Trace.WriteLine("Large Pool Size");
 
-            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121218, "02/4/2013 16:00 PM", "02/4/2013 16:20 PM"));
+            Assert.AreEqual(true, tripProcessor.ProcessTrips(20160402121218, "06/4/2013 16:00 PM", "06/4/2013 16:20 PM"));
         }
 
         [TestMethod]

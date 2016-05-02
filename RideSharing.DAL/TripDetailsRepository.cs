@@ -83,9 +83,13 @@ namespace RideSharing.DAL
                     td.SimulationId = Id;
                     td.CabId = Convert.ToInt32(returnValue[2]);
                     td.RideId = Convert.ToInt64(returnValue[3]);
+                    td.PassengerCount = Convert.ToInt32(returnValue[4]);
                     td.SequenceNum = Convert.ToInt32(returnValue[5]);
                     td.PickupDateTime = DateTime.Parse(returnValue[7].ToString());
                     td.DropoffDateTime = DateTime.Parse(returnValue[8].ToString());
+                    td.ActualDropoffDateTime = DateTime.Parse(returnValue[9].ToString());
+                    td.DelayTime = Convert.ToInt32(returnValue[10]);
+                    td.WalkTime = Convert.ToInt32(returnValue[11]);
                     returnData.Add(td);
                 }
 

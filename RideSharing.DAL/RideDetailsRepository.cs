@@ -27,7 +27,8 @@ namespace RideSharing.DAL
                                      " [Duration] [float] NOT NULL, " +
                                      " [PassengerCount] [smallint] NOT NULL, " +
                                      " [WaitTime] [int] NOT NULL, " +
-                                     " [WalkTime] [int] NOT NULL " +
+                                     " [WalkTime] [int] NOT NULL, " +
+                                     " [Sector] [varchar](100) NOT NULL" +
                                      " ) ON[PRIMARY] TEXTIMAGE_ON[PRIMARY]";
                 using (SqlCommand command = new SqlCommand(createTable, connection, transaction))
                 {
@@ -98,11 +99,45 @@ namespace RideSharing.DAL
                                     " Destination.Lat, Destination.Long, PassengerCount, WaitTime, WalkTime, Distance, Duration" +
                                     " FROM " + TableName +
                                     " WHERE PickupDateTime >= '" + StartDate + "' " +
-                                    " AND PickupDateTime <= '" + EndDate + "' AND PassengerCount <= 4 " +
-                                    " ORDER BY DropOffTime";
+                                    " AND PickupDateTime <= '" + EndDate + "' AND PassengerCount <= 4";
                 SqlCommand command = new SqlCommand(getRecords, connection);
                 var returnValue = command.ExecuteReader();
                 while(returnValue.Read())
+                {
+                    RideDetails rideDetails = new RideDetails();
+                    rideDetails.RideDetailsId = Convert.ToInt64(returnValue[0]);
+                    rideDetails.DropoffTime = Convert.ToDateTime(returnValue[1]);
+                    rideDetails.Destination.Latitude = Convert.ToDouble(returnValue[2]);
+                    rideDetails.Destination.Longitude = Convert.ToDouble(returnValue[3]);
+                    rideDetails.PassengerCount = Convert.ToInt32(returnValue[4]);
+                    rideDetails.WaitTime = Convert.ToInt32(returnValue[5]);
+                    rideDetails.WalkTime = Convert.ToInt32(returnValue[6]);
+                    rideDetails.PreviousDistanceTravelled = Convert.ToDouble(returnValue[7]);
+                    rideDetails.PreviousDurationTravelled = Convert.ToDouble(returnValue[8]) / 60;
+                    returnData.Add(rideDetails);
+                }
+
+                connection.Close();
+            }
+            return returnData;
+        }
+        public List<RideDetails> GetRideDetailsBySector(string StartDate, string EndDate, string TableName,string sectorName)
+        {
+            List<RideDetails> returnData = new List<RideDetails>();
+
+            using (var connection = new SqlConnection(QueryString))
+            {
+                connection.Open();
+
+                string getRecords = " SELECT Id, (DropoffDateTime - (PickupDateTime - '" + StartDate + "')) As DropOffTime, " +
+                                    " Destination.Lat, Destination.Long, PassengerCount, WaitTime, WalkTime, Distance, Duration,Sector" +
+                                    " FROM " + TableName +
+                                    " WHERE PickupDateTime >= '" + StartDate + "' " +
+                                    " AND Sector = '"+sectorName+"'"+
+                                    " AND PickupDateTime <= '" + EndDate + "' AND PassengerCount <= 4";
+                SqlCommand command = new SqlCommand(getRecords, connection);
+                var returnValue = command.ExecuteReader();
+                while (returnValue.Read())
                 {
                     RideDetails rideDetails = new RideDetails();
                     rideDetails.RideDetailsId = Convert.ToInt64(returnValue[0]);

@@ -22,5 +22,7 @@ namespace RideSharing.Models
         public int WaitTime { get; set; }
 
         public int WalkTime { get; set; }
+
+        public string Sector { get; set; }
     }
 }

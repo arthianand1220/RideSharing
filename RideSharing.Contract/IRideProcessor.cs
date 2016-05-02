@@ -12,5 +12,6 @@ namespace RideSharing.Contract
         List<RideSharingPosition> GetRideLocations(string StartDate, string EndDate);
 
         List<RideDetails> GetRides(string StartDate, string EndDate);
+        List<RideDetails> GetRidesBySector(string StartDate, string EndDate,string sectorName);
     }
 }

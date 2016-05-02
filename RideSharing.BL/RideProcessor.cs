@@ -29,6 +29,11 @@ namespace RideSharing.BL
             string tableName = GetTableName(StartDate);
             return rdRepo.GetRideDetails(StartDate, EndDate, tableName);
         }
+        public List<RideDetails> GetRidesBySector(string StartDate, string EndDate,string sectorName)
+        {
+            string tableName = GetTableName(StartDate);
+            return rdRepo.GetRideDetailsBySector(StartDate, EndDate, tableName,sectorName);
+        }
 
         private string GetTableName(string startDate)
         {
