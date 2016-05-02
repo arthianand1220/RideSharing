@@ -52,6 +52,7 @@ namespace RideSharing.BL
         private static double TRAFFIC_CORRECTION_PERCENTAGE = 10;
         private int loneRequests = 0;
         private Dictionary<CustomKey, Route> rideDict;
+        Dictionary<int, bool> PercentageWillingToRideShare;
 
         #endregion Private Variables
 
@@ -75,6 +76,7 @@ namespace RideSharing.BL
             tripDetails = new List<TripDetails>();
             loneRequests = 0;
             rideDict = new Dictionary<CustomKey, Route>();
+            PercentageWillingToRideShare = new Dictionary<int, bool>();
         }
 
         public List<long> GetSimulationIds()
@@ -87,14 +89,15 @@ namespace RideSharing.BL
             return tripDetailsRepo.GetSimulationDetails(SimulationId);
         }
 
-        public bool ProcessTrips(long SimulationId, string StartDateTime, string EndDateTime)
+        public bool ProcessTrips(long SimulationId, string StartDateTime, string EndDateTime, int WillingToRideSharePercentage)
         {
             var ProcessingStartTime = DateTime.Now.ToString();
             Trace.WriteLine("Processing Starttime: " + ProcessingStartTime);
             rideDetails = rideProcessor.GetRides(StartDateTime, EndDateTime);
 
-            if(rideDetails.Count > 0)
+            if (rideDetails.Count > 0)
             {
+                GenerateRandomPercentageWillingToRideShare(WillingToRideSharePercentage, rideDetails.Count);
                 var rideSharingCoordinates = rideDetails.Select(r => r.Destination).ToList();
                 AVG_SPEED_VEHICLE = (rideDetails.Sum(r => r.PreviousDistanceTravelled) / rideDetails.Sum(r => r.PreviousDurationTravelled / 3600)) / rideDetails.Count;
                 AVG_SPEED_VEHICLE_PER_MINUTE = AVG_SPEED_VEHICLE / 60;
@@ -103,8 +106,18 @@ namespace RideSharing.BL
                 {
                     if (ConstructDistanceMatrixFromSource(rideSharingCoordinates))
                     {
-                        int index = 0;
                         int cabId = 1;
+                        foreach (var item in PercentageWillingToRideShare.Where(v => v.Value == false))
+                        {
+                            var ride = rideDetails[item.Key];
+                            var dropoffTime = GetDropoffTime(StartDateTime, sourceDMatrix[item.Key + 1]);
+                            List<RideSharingPosition> positions = new List<RideSharingPosition>();
+                            positions.Add(new RideSharingPosition() { Latitude = 40.6599388, Longitude = -73.8056301 });
+                            positions.Add(ride.Destination);
+                            ride.CurrentDistanceTravelled = GetDistance(positions).distance * METRES_TO_MILES;
+                            SaveTrip(ride, cabId++, SimulationId, StartDateTime, dropoffTime, 1);
+                        }
+                        int index = 0;
                         foreach (var ride in rideDetails)
                         {
                             index++;
@@ -132,7 +145,7 @@ namespace RideSharing.BL
                     Trace.WriteLine("Processing Endtime: " + ProcessingEndTime);
 
 
-                    if (WriteDataToDatabase(SimulationId, StartDateTime, EndDateTime, ProcessingStartTime, ProcessingEndTime) > 0 && ridesProcessed.Count == rideDetails.Count)
+                    if (WriteDataToDatabase(SimulationId, StartDateTime, EndDateTime, ProcessingStartTime, ProcessingEndTime, WillingToRideSharePercentage) > 0 && ridesProcessed.Count == rideDetails.Count)
                         return true;
                 }
                 catch (Exception)
@@ -140,7 +153,7 @@ namespace RideSharing.BL
                     Trace.WriteLine("Failed test case!");
                     return true;
                 }
-                
+
             }
 
             return false;
@@ -175,8 +188,13 @@ namespace RideSharing.BL
                     var startDate = curr_date.ToString("yyyy/MM/dd ") + curr_startTime.Hours.ToString("00") + ":" + curr_startTime.Minutes.ToString("00") + ":" + curr_startTime.Seconds.ToString("00");
                     var endDate = curr_date.ToString("yyyy/MM/dd ") + curr_endTime.Hours.ToString("00") + ":" + curr_endTime.Minutes.ToString("00") + ":" + curr_endTime.Seconds.ToString("00");
 
-                    var simulationId = Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmssfff"));
-                    status = ProcessTrips(simulationId, startDate, endDate);
+                    status = ProcessTrips(Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmssfff")), startDate, endDate, 100);
+                    InitializeApp();
+                    status = ProcessTrips(Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmssfff")), startDate, endDate, 75);
+                    InitializeApp();
+                    status = ProcessTrips(Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmssfff")), startDate, endDate, 50);
+                    InitializeApp();
+                    status = ProcessTrips(Convert.ToInt64(DateTime.Now.ToString("yyyyMMddHHmmssfff")), startDate, endDate, 25);
                 }
             }
             return status;
@@ -185,6 +203,22 @@ namespace RideSharing.BL
         #endregion Interface Implementation
 
         #region Private Methods
+
+        private void GenerateRandomPercentageWillingToRideShare(int perc, int count)
+        {
+            int maxNum = count - ((perc * count) / 100);
+            List<int> values = new List<int>();
+            for (int i = 0; i < count; i++)
+            {
+                values.Add(i);
+            }
+            Random rnd = new Random();
+            var data = values.ToList().OrderBy(x => rnd.Next()).ToList();
+            for (int i = 0; i < count; i++)
+            {
+                PercentageWillingToRideShare.Add(data[i], i >= maxNum);
+            }
+        }
 
         private bool ConstructDistanceMatrixFromSource(List<RideSharingPosition> positions)
         {
@@ -337,10 +371,10 @@ namespace RideSharing.BL
             }
         }
 
-        private long WriteDataToDatabase(long simulationId, string poolStartDate, string poolEndDate, string processingStartTime, string processingEndTime)
+        private long WriteDataToDatabase(long simulationId, string poolStartDate, string poolEndDate, string processingStartTime, string processingEndTime, int PWRS)
         {
             var PoolSize = (DateTime.Parse(poolEndDate) - DateTime.Parse(poolStartDate)).Minutes;
-            tripDetailsRepo.StoreSimulations(simulationId, poolStartDate, poolEndDate, PoolSize, processingStartTime, processingEndTime);
+            tripDetailsRepo.StoreSimulations(simulationId, poolStartDate, poolEndDate, PoolSize, processingStartTime, processingEndTime, PWRS);
             return tripDetailsRepo.StoreTrips(tripDetails);
         }
 
@@ -500,7 +534,7 @@ namespace RideSharing.BL
 
             List<RideSharingPosition> positions = new List<RideSharingPosition>();
             positions.Add(sourceRide.Destination);
-            positions.Add(centroid);     
+            positions.Add(centroid);
             var route = GetDistance(positions);
             double sourceCentroidDist = route.distance * METRES_TO_MILES;
             double sourceCentroidTime = route.duration / 60;

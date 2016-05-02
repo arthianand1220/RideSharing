@@ -41,13 +41,13 @@ namespace RideSharing.DAL
             return 1;
         }
 
-        public void StoreSimulations(long SimulationId, string StartDate, string EndDate, int Poolsize, string ProcessingStartTime, string ProcessingEndTime)
+        public void StoreSimulations(long SimulationId, string StartDate, string EndDate, int Poolsize, string ProcessingStartTime, string ProcessingEndTime, int PercentageWillingToRideShare)
         {
             using (var connection = new SqlConnection(QueryString))
             {
                 connection.Open();
 
-                string getRecords = "INSERT INTO SIMULATIONS values (" + SimulationId + ", '" + StartDate + "',  '" + EndDate + "', " + Poolsize + ", '" + ProcessingStartTime + "', '" + ProcessingEndTime + "' )";
+                string getRecords = "INSERT INTO SIMULATIONS values (" + SimulationId + ", '" + StartDate + "',  '" + EndDate + "', " + Poolsize + ", '" + ProcessingStartTime + "', '" + ProcessingEndTime + "', " + PercentageWillingToRideShare + " )";
 
                 SqlCommand command = new SqlCommand(getRecords, connection);
                 var returnValue = command.ExecuteNonQuery();              

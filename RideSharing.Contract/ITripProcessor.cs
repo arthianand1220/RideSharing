@@ -7,7 +7,7 @@ namespace RideSharing.Contract
     {
         bool RunSimulations(string StartDate, string EndDate, int NumSimulations, int PoolSize);
 
-        bool ProcessTrips(long SimulationId, string StartDate, string EndDate);
+        bool ProcessTrips(long SimulationId, string StartDate, string EndDate, int WillingToRideSharePercentage);
 
         List<long> GetSimulationIds();
 
