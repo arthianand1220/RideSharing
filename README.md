@@ -23,10 +23,10 @@ Steps to setup the development server:
   You can follow the tutorial on their wiki page. (https://github.com/Project-OSRM/osrm-backend/wiki/Building-OSRM)
 - Now install SQL Server and run the db scripts present in the sql folder.
 - Now open the sln file in Visual Studio 2015 and build the solution.
-- Once the build is successfull, launch the application in the browser.
-- Now select the dataset to import, specify max waiting and walking time and hit import.
-- Once the file is imported, you would get the success message.
-- To run the simulations, open TripProcessorTests in RideSharing.Tests project, change the
+- Once the build is successful, launch the application in the browser.
+- Select the dataset to import, specify maximum waiting and walking time and hit import.
+- Once the file is imported, a success message would be displayed.
+- To run the simulations, open TripProcessorTests in RideSharing project. To test the project, change the
   walking and driving URLs.
 - Once that is done right click on the test and hit RunTests.
 - The results would be saved in database.
