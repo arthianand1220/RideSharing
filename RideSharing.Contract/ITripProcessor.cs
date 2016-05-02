@@ -11,6 +11,6 @@ namespace RideSharing.Contract
 
         List<long> GetSimulationIds();
 
-        List<TripDetails> GetTrips(long SimulationId);
+        SimulationViewModel GetTrips(long SimulationId);
     }
 }

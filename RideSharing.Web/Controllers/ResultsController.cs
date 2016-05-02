@@ -2,6 +2,7 @@
 using RideSharing.BL;
 using RideSharing.Contract;
 using RideSharing.DAL;
+using RideSharing.Models;
 using RideSharingWeb.Models;
 using System;
 using System.Collections.Generic;
@@ -13,28 +14,30 @@ namespace RideSharingWeb.Controllers
 {
     public class ResultsController : Controller
     {
+        IRideProcessor rideProcessor;
         ITripProcessor tripProcessor;
-        
+
         public ResultsController()
         {
             RideDetailsRepository rideDetailsRepo = new RideDetailsRepository();
             TripDetailsRepository tripDetailsRepo = new TripDetailsRepository();
-            IRideProcessor rideProcessor = new RideProcessor(rideDetailsRepo);
-            tripProcessor = new TripProcessor(tripDetailsRepo, rideProcessor, "http://192.168.0.114:5000/");
+            rideProcessor = new RideProcessor(rideDetailsRepo);
+            tripProcessor = new TripProcessor(tripDetailsRepo, rideProcessor, "http://192.168.0.114:5000/", "http://192.168.0.111:5000/");
         }
-
-        // GET: Results
+        
         public ActionResult Index()
         {
             ResultsViewModel resultViewModel = new ResultsViewModel();
             resultViewModel.SimulationIds = tripProcessor.GetSimulationIds();
-            foreach(var sId in resultViewModel.SimulationIds)
-            {
-                var result = tripProcessor.GetTrips(sId);
-                resultViewModel.Trips.Add(sId, result);
-            }
-
             return View(resultViewModel);
+        }
+
+        public string GetDetailsForSimulationId(string Id)
+        {
+            SimulationViewModel svm = new SimulationViewModel();
+            svm = tripProcessor.GetTrips(Convert.ToInt64(Id));
+
+            return JsonConvert.SerializeObject(svm);
         }
     }
 }

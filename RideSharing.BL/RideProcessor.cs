@@ -30,6 +30,12 @@ namespace RideSharing.BL
             return rdRepo.GetRideDetails(StartDate, EndDate, tableName);
         }
 
+        public List<RideDetails> GetRidesByIds(List<long> Ids)
+        {
+            string tableName = "RideDetails201306";
+            return rdRepo.GetRideDetailsById(Ids, tableName);
+        }
+
         private string GetTableName(string startDate)
         {
             var date = DateTime.Parse(startDate);

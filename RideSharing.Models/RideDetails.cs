@@ -18,7 +18,9 @@ namespace RideSharing.Models
 
         public double PreviousDurationTravelled { get; set; }
 
-        public SortedDictionary<int, double> TimeMatrix { get; set; }
+        public SortedDictionary<int, double> DrivingTimeMatrix { get; set; }
+
+        public SortedDictionary<int, double> WalkingTimeMatrix { get; set; }
 
         public int PassengerCount { get; set; }
 
@@ -33,7 +35,8 @@ namespace RideSharing.Models
         public RideDetails()
         {
             Destination = new RideSharingPosition();
-            TimeMatrix = new SortedDictionary<int, double>();
+            DrivingTimeMatrix = new SortedDictionary<int, double>();
+            WalkingTimeMatrix = new SortedDictionary<int, double>();
             DropoffTime = DropoffTime.AddMinutes(WaitTime);
             CurrentDistanceTravelled = 0;
             CurrentDurationTravelled = 0;
@@ -45,7 +48,8 @@ namespace RideSharing.Models
             ride.RideDetailsId = RideDetailsId;
             ride.Destination = Destination;
             ride.DropoffTime = DropoffTime;
-            ride.TimeMatrix = TimeMatrix;
+            ride.DrivingTimeMatrix = DrivingTimeMatrix;
+            ride.WalkingTimeMatrix = WalkingTimeMatrix;
             ride.PassengerCount = PassengerCount;
             ride.WaitTime = WaitTime;
             ride.WalkTime = WalkTime;

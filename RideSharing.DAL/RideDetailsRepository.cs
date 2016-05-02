@@ -121,5 +121,33 @@ namespace RideSharing.DAL
             }
             return returnData;
         }
+
+        public List<RideDetails> GetRideDetailsById(List<long> Ids, string TableName)
+        {
+            List<RideDetails> returnData = new List<RideDetails>();
+
+            using (var connection = new SqlConnection(QueryString))
+            {
+                connection.Open();
+
+                string getRecords = "SELECT Id, DropoffDateTime, WaitTime, WalkTime, PassengerCount FROM " + TableName + " WHERE Id in (" + string.Join(",", Ids) +")";
+                SqlCommand command = new SqlCommand(getRecords, connection);
+                var returnValue = command.ExecuteReader();
+                while (returnValue.Read())
+                {
+                    RideDetails rideDetails = new RideDetails();
+                    rideDetails.RideDetailsId = Convert.ToInt64(returnValue[0]);
+                    rideDetails.DropoffTime = Convert.ToDateTime(returnValue[1]);
+                    rideDetails.PassengerCount = Convert.ToInt32(returnValue[4]);
+                    rideDetails.WaitTime = Convert.ToInt32(returnValue[2]);
+                    rideDetails.WalkTime = Convert.ToInt32(returnValue[3]);
+                    returnData.Add(rideDetails);
+                }
+
+                connection.Close();
+            }
+            return returnData;
+        }
+        
     }
 }
